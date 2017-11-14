@@ -1,6 +1,4 @@
 flask
-flask-wtf
 flask-sqlalchemy
-jinja2
-psycopg2
-wtforms
+flask-wtf
+ipython
