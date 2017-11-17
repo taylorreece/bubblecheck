@@ -13,6 +13,7 @@ else:
     id_column_type = db.Integer
     id_column_server_default = None
 
+# ==============================================================================
 # Define a base model for other database tables to inherit
 # We'll use UUIDs in postgresql, but just ids for testing
 class Base(db.Model):
@@ -25,11 +26,16 @@ class Base(db.Model):
         db.session.add(self)
         db.session.commit()
 
+# ==============================================================================
+# UserCourseAssociation is a many-to-many association between users and courses
+# users can have a variety of permissions for a course: they can be an:
+# owner - full access to the course
+# editor - can edit the course; cannot delete or share results
+# readonly - can only view exam results
 class CoursePermissionEnum(enum.Enum):
     owner = 1
     editor = 2
     readonly = 3
-
 class UserCourseAssociation(Base):
     __tablename__ = 'users_courses_permissions'
     users_id    = db.Column(id_column_type, db.ForeignKey('users.id'))
@@ -38,7 +44,7 @@ class UserCourseAssociation(Base):
     courses = relationship("Course", back_populates="users")
     users = relationship("User", back_populates="courses")
 
-# Define a User model
+# ==============================================================================
 class User(Base):
     __tablename__ = 'users'
     name     = db.Column(db.Text(), nullable=False)
@@ -55,6 +61,7 @@ class User(Base):
     def __repr__(self):
         return '<User %r>' % (self.name)
 
+# ==============================================================================
 class Course(Base):
     __tablename__ = 'courses'
     name    = db.Column(db.Text(), nullable=False)
