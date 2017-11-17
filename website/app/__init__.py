@@ -5,6 +5,6 @@ app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 
-from app.models import User
+from app.models import User, Course, UserCourseAssociation, CoursePermissionEnum
 
 db.create_all()

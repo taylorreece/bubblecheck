@@ -1,4 +1,9 @@
+from sqlalchemy.orm import relationship
 from app import db
+from sqlalchemy.ext.declarative import declarative_base
+import enum
+
+Base = declarative_base()
 
 if db.engine.name == 'postgresql':
     from app.sqlalchemy_extensions.uuid_column import UUID
@@ -7,6 +12,7 @@ if db.engine.name == 'postgresql':
 else:
     id_column_type = db.Integer
     id_column_server_default = None
+
 # Define a base model for other database tables to inherit
 # We'll use UUIDs in postgresql, but just ids for testing
 class Base(db.Model):
@@ -19,12 +25,26 @@ class Base(db.Model):
         db.session.add(self)
         db.session.commit()
 
+class CoursePermissionEnum(enum.Enum):
+    owner = 1
+    editor = 2
+    readonly = 3
+
+class UserCourseAssociation(Base):
+    __tablename__ = 'users_courses_permissions'
+    users_id    = db.Column(id_column_type, db.ForeignKey('users.id'))
+    courses_id  = db.Column(id_column_type, db.ForeignKey('courses.id'))
+    permissions = db.Column(db.Enum(CoursePermissionEnum), nullable=False)
+    courses = relationship("Course", back_populates="users")
+    users = relationship("User", back_populates="courses")
+
 # Define a User model
 class User(Base):
     __tablename__ = 'users'
     name     = db.Column(db.Text(), nullable=False)
     email    = db.Column(db.Text(), nullable=False, unique=True)
     password = db.Column(db.Text(), nullable=False)
+    courses  = relationship("UserCourseAssociation", back_populates="users")
 
     # New instance instantiation procedure
     def __init__(self, name, email, password):
@@ -34,3 +54,14 @@ class User(Base):
 
     def __repr__(self):
         return '<User %r>' % (self.name)
+
+class Course(Base):
+    __tablename__ = 'courses'
+    name    = db.Column(db.Text(), nullable=False)
+    users   = relationship("UserCourseAssociation",back_populates="courses")
+
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return '<Course %r>' % (self.name)
