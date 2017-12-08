@@ -27,36 +27,16 @@ class Base(db.Model):
         db.session.commit()
 
 # ==============================================================================
-# UserCourseAssociation is a many-to-many association between users and courses
-# users can have a variety of permissions for a course: they can be an:
-# owner - full access to the course
-# editor - can edit the course; cannot delete or share results
-# readonly - can only view exam results
-class CoursePermissionEnum(enum.Enum):
-    owner = 1
-    editor = 2
-    readonly = 3
-class UserCourseAssociation(Base):
-    __tablename__ = 'users_courses_permissions'
-    users_id    = db.Column(id_column_type, db.ForeignKey('users.id'))
-    courses_id  = db.Column(id_column_type, db.ForeignKey('courses.id'))
-    permissions = db.Column(db.Enum(CoursePermissionEnum), nullable=False)
-    courses = relationship("Course", back_populates="users")
-    users = relationship("User", back_populates="courses")
-
-# ==============================================================================
 class User(Base):
     __tablename__ = 'users'
     name     = db.Column(db.Text(), nullable=False)
     email    = db.Column(db.Text(), nullable=False, unique=True)
     password = db.Column(db.Text(), nullable=False)
-    courses  = relationship("UserCourseAssociation", back_populates="users")
-
-    # New instance instantiation procedure
-    def __init__(self, name, email, password):
-        self.name     = name
-        self.email    = email
-        self.password = password
+    courses = relationship(
+        "Course",
+        secondary='users_courses_permissions',
+        back_populates="users"
+    )
 
     def __repr__(self):
         return '<User %r>' % (self.name)
@@ -65,10 +45,30 @@ class User(Base):
 class Course(Base):
     __tablename__ = 'courses'
     name    = db.Column(db.Text(), nullable=False)
-    users   = relationship("UserCourseAssociation",back_populates="courses")
-
-    def __init__(self, name):
-        self.name = name
+    users = relationship(
+        "User",
+        secondary='users_courses_permissions',
+        back_populates="courses"
+    )
 
     def __repr__(self):
         return '<Course %r>' % (self.name)
+
+# ==============================================================================
+# UserCoursePermission is a many-to-many association between users and courses
+# users can have a variety of permissions for a course: they can be an:
+# owner - full access to the course
+# editor - can edit the course; cannot delete or share results
+# readonly - can only view exam results
+class CoursePermissionEnum(enum.Enum):
+    owner = 1
+    editor = 2
+    readonly = 3
+
+class UserCoursePermission(Base):
+    __tablename__ = 'users_courses_permissions'
+    users_id    = db.Column(id_column_type, db.ForeignKey('users.id'))
+    courses_id  = db.Column(id_column_type, db.ForeignKey('courses.id'))
+    permission = db.Column(db.Enum(CoursePermissionEnum), nullable=False)
+    user = relationship("User")
+    course = relationship("Course")

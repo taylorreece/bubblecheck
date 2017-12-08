@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from app import db, User, Course, UserCourseAssociation, CoursePermissionEnum
+from app import db, User, Course, UserCoursePermission, CoursePermissionEnum
 db.create_all()
 
 u = User(
@@ -14,7 +14,7 @@ c = Course(
 )
 c.save()
 
-a = UserCourseAssociation(permissions='readonly')
-a.courses = c
-u.courses.append(a)
-a.save()
+permission = UserCoursePermission(permission='readonly')
+permission.course = c
+permission.user = u
+permission.save()
