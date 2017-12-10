@@ -32,6 +32,7 @@ class User(Base):
     name     = db.Column(db.Text(), nullable=False)
     email    = db.Column(db.Text(), nullable=False, unique=True)
     password = db.Column(db.Text(), nullable=False)
+    is_admin = db.Column(db.Boolean(), nullable=False, default=False)
     courses = relationship(
         "Course",
         secondary='users_courses_permissions',
