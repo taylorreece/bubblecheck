@@ -1,9 +1,6 @@
 from sqlalchemy.orm import relationship
 from app import db
-from sqlalchemy.ext.declarative import declarative_base
 import enum
-
-Base = declarative_base()
 
 if db.engine.name == 'postgresql':
     from app.sqlalchemy_extensions.uuid_column import UUID
@@ -21,6 +18,7 @@ class Base(db.Model):
     id = db.Column(id_column_type, primary_key=True, server_default=id_column_server_default)
     created  = db.Column(db.DateTime(timezone=True), nullable=False, server_default=db.func.current_timestamp())
     modified = db.Column(db.DateTime(timezone=True), nullable=False, server_default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+    active   = db.Column(db.Boolean(), nullable=False, default=True)
 
     def save(self):
         db.session.add(self)
@@ -40,7 +38,7 @@ class User(Base):
     )
 
     def __repr__(self):
-        return '<User %r>' % (self.name)
+        return '<User %r (email=%r; id=%r)>' % (self.name, self.email, self.id)
 
 # ==============================================================================
 class Course(Base):
@@ -73,3 +71,8 @@ class UserCoursePermission(Base):
     permission = db.Column(db.Enum(CoursePermissionEnum), nullable=False)
     user = relationship("User")
     course = relationship("Course")
+
+    # Don't allow a user to be an owner, and 'readonly' or something
+    __table_args__ = (
+        db.UniqueConstraint('users_id', 'courses_id', name='unique_user_course_pair'),
+    )
