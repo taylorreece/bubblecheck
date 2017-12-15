@@ -20,15 +20,12 @@ class Base(db.Model):
     modified = db.Column(db.DateTime(timezone=True), nullable=False, server_default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     active   = db.Column(db.Boolean(), nullable=False, default=True)
 
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-
 # ==============================================================================
 class User(Base):
     __tablename__ = 'users'
-    name     = db.Column(db.Text(), nullable=False)
-    email    = db.Column(db.Text(), nullable=False, unique=True)
+    username = db.Column(db.Text(), nullable=False)
+    teachername = db.Column(db.Text(), nullable=False)
+    email = db.Column(db.Text(), nullable=False, unique=True)
     password = db.Column(db.Text(), nullable=False)
     is_admin = db.Column(db.Boolean(), nullable=False, default=False)
     courses = relationship(
@@ -49,6 +46,7 @@ class Course(Base):
         secondary='users_courses_permissions',
         back_populates="courses"
     )
+    sections = relationship("Section")
 
     def __repr__(self):
         return '<Course %r>' % (self.name)
@@ -68,7 +66,7 @@ class UserCoursePermission(Base):
     __tablename__ = 'users_courses_permissions'
     users_id    = db.Column(id_column_type, db.ForeignKey('users.id'))
     courses_id  = db.Column(id_column_type, db.ForeignKey('courses.id'))
-    permission = db.Column(db.Enum(CoursePermissionEnum), nullable=False)
+    permission  = db.Column(db.Enum(CoursePermissionEnum), nullable=False)
     user = relationship("User")
     course = relationship("Course")
 
@@ -76,3 +74,9 @@ class UserCoursePermission(Base):
     __table_args__ = (
         db.UniqueConstraint('users_id', 'courses_id', name='unique_user_course_pair'),
     )
+
+# ==============================================================================
+class Section(Base):
+    __tablename__ = 'sections'
+    name = db.Column(db.Text(), nullable=False)
+    courses_id = db.Column(id_column_type, db.ForeignKey('courses.id'))
