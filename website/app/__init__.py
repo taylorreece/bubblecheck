@@ -14,3 +14,9 @@ from app.models import User
 from app.models import UserCoursePermission
 
 from app import views
+
+from app.api.user import user_api_routes
+from app.api.course import course_api_routes
+
+app.register_blueprint(user_api_routes, url_prefix='/api/user')
+app.register_blueprint(course_api_routes, url_prefix='/api/course')
