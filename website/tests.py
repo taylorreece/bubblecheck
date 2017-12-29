@@ -19,7 +19,7 @@ class Random(object):
     def user(self):
         return User(username=self.letters(), teachername=self.letters(), email=self.email(), password=self.letters())
     def course(self):
-        return Course(name=self.letters())
+        return Course(name=random.choice(['Geometry','Algebra','US History','Physics','Dance','Music','Art','World History','Band','French','Japanese','German']))
     def section(self):
         return Section(name=self.letters())
 
