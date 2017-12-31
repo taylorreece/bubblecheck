@@ -7,20 +7,20 @@
 
   <!-- CSS  -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.2/css/materialize.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-  <nav class="light-blue lighten-1" role="navigation">
+  <nav class="blue darken-4" role="navigation">
     <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">BubbleCheck</a>
       <ul class="right hide-on-med-and-down">
-        <li><a href="#" class="waves-effect waves-light btn">Log In</a></li>
+        <li><a href="#" class="waves-effect waves-light btn blue">Log In</a></li>
       </ul>
 
-      <ul id="nav-mobile" class="side-nav">
+      <ul id="nav-mobile" class="sidenav">
         <li><a href="#">Log In</a></li>
       </ul>
-      <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+      <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
     </div>
   </nav>
 
@@ -31,8 +31,8 @@
     <br><br>
   </div>
 
-  <footer class="page-footer blue">
-    <div class="footer-copyright">
+  <footer class="page-footer blue darken-3">
+    <div class="footer-copyright blue darken-4">
       <div class="container">
       Made by <a href="https://www.linkedin.com/in/taylor-reece-1a573694/" class="orange-text text-lighten-3">Taylor Reece</a> | <a href="{{ url_for('about') }}" class="orange-text text-lighten-3">About</a>
       </div>
@@ -41,7 +41,7 @@
 
   <!--  Scripts-->
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.2/js/materialize.min.js"></script>
   <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
   </body>
 </html>
