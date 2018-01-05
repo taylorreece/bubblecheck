@@ -17,7 +17,9 @@ class Random(object):
     def email(self):
         return '{}@{}.com'.format(self.letters(8), self.letters(5))
     def user(self):
-        return User(username=self.letters(), teachername=self.letters(), email=self.email(), password=self.letters())
+        u = User(username=self.letters(), teachername=self.letters(), email=self.email())
+        u.set_password(self.letters())
+        return u
     def course(self):
         return Course(name=random.choice(['Geometry','Algebra','US History','Physics','Dance','Music','Art','World History','Band','French','Japanese','German']))
     def section(self):
@@ -28,7 +30,7 @@ class BubbleCheckTestSuite(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(BubbleCheckTestSuite, self).__init__(*args, **kwargs)
         self.user1 = rand.user()
-        self.user1.is_admin = True 
+        self.user1.is_admin = True
         self.user2 = rand.user()
         self.user3 = rand.user()
         self.course1 = rand.course()
@@ -44,6 +46,9 @@ class BubbleCheckTestSuite(unittest.TestCase):
         self.assertIsNotNone(self.user1.id)
         self.assertTrue(self.user1.is_admin)
         self.assertFalse(self.user2.is_admin)
+        self.user1.set_password('abcd1234!')
+        self.assertTrue(self.user1.check_password('abcd1234!'))
+        self.assertFalse(self.user1.check_password('abcd1234#'))
 
     def test_courses(self):
         self.assertIsNotNone(self.course1.id)
@@ -62,7 +67,7 @@ class BubbleCheckTestSuite(unittest.TestCase):
             db.session.add_all([permission1, permission2])
             db.session.commit()
         db.session.rollback() # Required, as our session is now dead
-    
+
     def test_sections(self):
         permission1 = UserCoursePermission(permission = 'owner', user = self.user1, course = self.course1)
         section1 = rand.section()

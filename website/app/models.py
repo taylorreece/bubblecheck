@@ -1,4 +1,6 @@
 from sqlalchemy.orm import relationship
+from werkzeug.security import check_password_hash
+from werkzeug.security import generate_password_hash
 from app import db
 import enum
 
@@ -34,6 +36,12 @@ class User(Base):
         back_populates="users"
     )
 
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+
     def __repr__(self):
         return '<User %r (email=%r; id=%r)>' % (self.name, self.email, self.id)
 
@@ -47,12 +55,12 @@ class Course(Base):
         back_populates="courses"
     )
     sections = relationship("Section")
+    exams = relationship("Exam")
 
     @property
     def serialize(self):
        """Return object data in easily serializeable format"""
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
 
     def __repr__(self):
         return '<Course %r>' % (self.name)
@@ -86,3 +94,15 @@ class Section(Base):
     __tablename__ = 'sections'
     name = db.Column(db.Text(), nullable=False)
     courses_id = db.Column(id_column_type, db.ForeignKey('courses.id'))
+
+    def __repr__(self):
+        return '<Section %r>' % (self.name)
+
+# ==============================================================================
+class Exam(Base):
+    __tablename__ = 'exams'
+    name = db.Column(db.Text(), nullable=False)
+    courses_id = db.Column(id_column_type, db.ForeignKey('courses.id'))
+
+    def __repr__(self):
+        return '<Exam %r>' % (self.name)
