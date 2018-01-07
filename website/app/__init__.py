@@ -15,6 +15,12 @@ from app.models import UserCoursePermission
 
 from app import views
 
+# Regiser web blueprints
+from app.views.default import default_web_views
+app.register_blueprint(default_web_views)
+from app.views.user import user_web_routes
+app.register_blueprint(user_web_routes, url_prefix='/user')
+
 # Register API Blueprints
 from app.api.course import course_api_routes
 app.register_blueprint(course_api_routes, url_prefix='/api/course')
