@@ -3,22 +3,30 @@
 {% block title %}Login{% endblock %}
 
 {% block body %}
-{% from "_formhelpers.html" import render_field %}
+{% from "_formhelpers.html" import render_errors %}
 <div class="row">
-	<div>
-		<form class="form-signin" method="POST" action="{{ url_for('user_web_routes.login_post') }}">
-			<h2 class="form-signin-heading">Please sign in</h2>
-			<dl>
-		    {{ render_field(form.email) }}
-		    {{ render_field(form.password) }}
-		  </dl>
-			<div class="form-group">
-				<div>
-					<button type="submit" class="btn btn-default">Sign In</button>
-				</div>
+	<form class="col s12 m8 l6 offset-m2 offset-l3 card" method="POST" action="{{ url_for('user_web_routes.login_post') }}">
+		<div class="row margin">
+			<div class="input-field col s12">
+				<i class="small material-icons prefix">account_box</i>
+				<input id="email" type="text">
+				<label for="email" class="center-align">Email Address</label>
+				{{ render_errors(form.email) }}
 			</div>
-		</form>
-	</div>
-</div><!-- row -->
-
+		</div>
+		<div class="row margin">
+			<div class="input-field col s12">
+				<i class="small material-icons prefix">lock</i>
+				<input id="password" type="password">
+				<label for="password">Password</label>
+				{{ render_errors(form.password) }}
+			</div>
+		</div>
+		<div class="row">
+			<div class="input-field col s12 center">
+				<button type="submit" class="btn btn-default">Sign In</button>
+			</div>
+		</div>
+	</form>
+</div>
 {% endblock %}
