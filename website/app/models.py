@@ -41,7 +41,15 @@ class User(Base):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
-
+    
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+        return { c.name: getattr(self, c.name)
+            for c in self.__table__.columns
+            if c.name not in ['password']
+        }
+    
     def __repr__(self):
         return '<User %r (email=%r; id=%r)>' % (self.name, self.email, self.id)
 

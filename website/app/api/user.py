@@ -1,4 +1,5 @@
 from flask import Blueprint
+from flask import jsonify
 from flask import render_template
 from flask import request
 from flask import Response
@@ -19,3 +20,11 @@ def add():
     db.session.add(new_user)
     db.session.commit();
     return Response(status=200)
+
+@user_api_routes.route('/get/<userid>', methods=['GET'])
+def get(userid):
+    u = db.session.query(User).filter(User.id==userid).first()
+    if u:
+        return jsonify(u.serialize)
+    else:
+        return Response(status=404)
