@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
+import sys
+sys.path.append('..')
+
 import random
 import string
 import unittest
-from app import app
 from app import db
 from app import Course
 from app import Section
@@ -81,14 +83,6 @@ class CheckModels(unittest.TestCase):
         db.session.add_all([permission1, section1, section2, self.course1])
         my_user = db.session.query(User).filter_by(username=user1_username).first()
         self.assertEqual(my_user.courses[0].sections[0].name, section1_name)
-
-class CheckAPI(unittest.TestCase):
-    def __init__(self, *args, **kwargs):
-        super(CheckAPI, self).__init__(*args, **kwargs)
-        self.client = app.test_client()
-
-    def test_get_marketing_pages(self):
-        self.assertEqual(200, self.client.get('/').status_code)
 
 if __name__ == '__main__':
     unittest.main()
