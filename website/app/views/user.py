@@ -10,7 +10,7 @@ from app import db
 user_web_routes = Blueprint('user_web_routes', __name__)
 
 @user_web_routes.route('/login', methods=['GET'])
-def login_get():
+def login():
     return render_template('user/login.html', form=LoginForm())
 
 @user_web_routes.route('/login', methods=['POST'])
@@ -18,7 +18,7 @@ def login_post():
     form = LoginForm(request.form)
     print(form.validate())
     if form.validate():
-        _user = db.session.query(User).filter_by(username=form.email.data).first()
+        _user = db.session.query(User).filter_by(email=form.email.data).first()
         if not _user:
             flash('danger|Login Incorrect')
             return render_template('user/login.html', form=form)

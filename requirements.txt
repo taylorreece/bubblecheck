@@ -1,5 +1,7 @@
 flask
+Flask-Login
 Flask-Migrate
 flask-sqlalchemy
 flask-wtf
 ipython
+PyJWT

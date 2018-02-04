@@ -20,7 +20,7 @@ class Random(object):
     def email(self):
         return '{}@{}.com'.format(self.letters(8), self.letters(5))
     def user(self):
-        u = User(username=self.letters(), teachername=self.letters(), email=self.email())
+        u = User(teachername=self.letters(), email=self.email())
         u.set_password(self.letters())
         return u
     def course(self):
@@ -76,12 +76,12 @@ class CheckModels(unittest.TestCase):
         permission1 = UserCoursePermission(permission = 'owner', user = self.user1, course = self.course1)
         section1 = rand.section()
         section1_name = section1.name
-        user1_username = self.user1.username
+        user1_email = self.user1.email
         section2 = rand.section()
         self.course1.sections.append(section1)
         self.course1.sections.append(section2)
         db.session.add_all([permission1, section1, section2, self.course1])
-        my_user = db.session.query(User).filter_by(username=user1_username).first()
+        my_user = db.session.query(User).filter(User.email==user1_email).first()
         self.assertEqual(my_user.courses[0].sections[0].name, section1_name)
 
 if __name__ == '__main__':

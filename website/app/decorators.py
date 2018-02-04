@@ -9,13 +9,16 @@ from functools import wraps
 from app import User
 
 # ===================================================
-# TODO: Change redirects to not authorized returns
 def login_required_api(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if g.user is None:
-        	flash('info|You need to log in to access ' + request.url)
-        	return redirect(url_for('user.login', next=request.url))
+        g.current_user = None
+        if 'sessionid' in session:
+            g.current_user = User.getUserBySessionID(str(session['sessionid']))
+        if request.values.get('apikey'):
+            g.current_user = User.getUserByAPIKey(str(request.values.get('api_key')))
+        if g.current_user is None:
+        	return ("You need to log in to do that.", 403)
         g.current_user.logged_in = True
         return f(*args, **kwargs)
     return decorated_function

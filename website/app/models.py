@@ -1,8 +1,11 @@
+from flask_login import UserMixin
 from sqlalchemy.orm import relationship
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 from app import db
+import datetime
 import enum
+import jwt
 
 if db.engine.name == 'postgresql':
     from app.sqlalchemy_extensions.uuid_column import UUID
@@ -23,11 +26,10 @@ class Base(db.Model):
     active   = db.Column(db.Boolean(), nullable=False, default=True)
 
 # ==============================================================================
-class User(Base):
+class User(UserMixin, Base):
     __tablename__ = 'users'
-    username = db.Column(db.Text(), nullable=False)
-    teachername = db.Column(db.Text(), nullable=False)
     email = db.Column(db.Text(), nullable=False, unique=True)
+    teachername = db.Column(db.Text(), nullable=False)
     password = db.Column(db.Text(), nullable=False)
     is_admin = db.Column(db.Boolean(), nullable=False, default=False)
     courses = relationship(
@@ -35,13 +37,32 @@ class User(Base):
         secondary='users_courses_permissions',
         back_populates="users"
     )
+    logged_in = False
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
-    
+
+    def create_jwt(self):
+        return jwt.encode({
+                'email': self.email,
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=72)
+            }, self.password
+        )
+
+    def get_user_by_jwt(self, token):
+        try:
+            decoded_token = jwt.decode(token, verify=False)
+            u = db.session.query(User).filter(User.email==decoded_token['email']).first()
+            if u and jwt.decode(token, u.password):
+                return u
+            else:
+                return None
+        except jwt.exceptions.DecodeError as e:
+            return None
+
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
@@ -49,7 +70,7 @@ class User(Base):
             for c in self.__table__.columns
             if c.name not in ['password']
         }
-    
+
     def __repr__(self):
         return '<User %r (email=%r; id=%r)>' % (self.name, self.email, self.id)
 
