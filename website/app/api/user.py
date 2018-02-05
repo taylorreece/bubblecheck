@@ -3,8 +3,10 @@ from flask import jsonify
 from flask import render_template
 from flask import request
 from flask import Response
+from flask import session
+from flask_login import login_required
 from app import db
-from app import User
+from app.models import User
 
 user_api_routes = Blueprint('user_api_routes', __name__)
 
@@ -43,8 +45,8 @@ def token_login():
 
 @user_api_routes.route('/token/check', methods=['GET'])
 def token_check():
-    # curl -X GET 'http://localhost:8080/api/user/token/check' -H "WWW-Authorization: MYJWTTOKEN"
-    token = request.headers.get('Www-Authorization')
+    # curl -X GET 'http://localhost:8080/api/user/token/check' -u "MYJWTTOKEN:"
+    token = request.authorization.username
     u = User().get_user_by_jwt(token)
     if u:
         return Response("Valid")

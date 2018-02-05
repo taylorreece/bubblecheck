@@ -6,10 +6,10 @@ import random
 import string
 import unittest
 from app import db
-from app import Course
-from app import Section
-from app import User
-from app import UserCoursePermission
+from app.models import Course
+from app.models import Section
+from app.models import User
+from app.models import UserCoursePermission
 from sqlalchemy.exc import IntegrityError
 
 db.create_all()

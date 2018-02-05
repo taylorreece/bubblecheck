@@ -6,7 +6,7 @@ from flask import session
 from flask import url_for
 from functools import wraps
 
-from app import User
+from app.models import User
 
 # ===================================================
 def login_required_api(f):
