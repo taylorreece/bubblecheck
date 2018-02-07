@@ -44,7 +44,7 @@ def logout():
     return redirect(url_for('user_web_routes.login'))
 
 @user_web_routes.route('/forgot', methods=['GET'])
-def forgot_get():
+def forgot():
     return "Hello world!"
 
 @user_web_routes.route('/dashboard', methods=['GET'])
