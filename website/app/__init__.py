@@ -35,7 +35,7 @@ app.register_blueprint(user_api_routes, url_prefix='/api/user')
 # When we implement login, we'll just need to set session['jwt_token'] to some valid token
 # EZPZ
 @login_manager.request_loader
-def load_user(user_id):
+def load_user_request(user_id):
     token = None
     if 'jwt_token' in session:
         token = str(session['jwt_token'])
@@ -45,3 +45,7 @@ def load_user(user_id):
         return User().get_user_by_jwt(token)
     else:
         return None
+
+@login_manager.user_loader
+def load_user_session(user_id):
+    return db.session.query(User).filter(User.id==user_id).first()

@@ -14,7 +14,7 @@
 		<div class="row">
 			<div class="input-field col s12">
 				<i class="small material-icons prefix">account_box</i>
-				<input id="email" type="text">
+				{{ form.email }}
 				<label for="email" class="center-align">Email Address</label>
 				{{ render_errors(form.email) }}
 			</div>
@@ -22,7 +22,7 @@
 		<div class="row margin">
 			<div class="input-field col s12">
 				<i class="small material-icons prefix">lock</i>
-				<input id="password" type="password">
+				{{ form.password }}
 				<label for="password">Password</label>
 				{{ render_errors(form.password) }}
 			</div>

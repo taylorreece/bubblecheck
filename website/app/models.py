@@ -72,7 +72,7 @@ class User(UserMixin, Base):
         }
 
     def __repr__(self):
-        return '<User %r (email=%r; id=%r)>' % (self.name, self.email, self.id)
+        return '<User %r (id=%r)>' % (self.email, self.id)
 
 # ==============================================================================
 class Course(Base):
