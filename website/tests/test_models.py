@@ -81,6 +81,7 @@ class CheckModels(unittest.TestCase):
         self.course1.sections.append(section1)
         self.course1.sections.append(section2)
         db.session.add_all([permission1, section1, section2, self.course1])
+        db.session.commit()
         my_user = db.session.query(User).filter(User.email==user1_email).first()
         self.assertEqual(my_user.courses[0].sections[0].name, section1_name)
 

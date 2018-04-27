@@ -11,5 +11,5 @@ course_api_routes = Blueprint('course_api_routes', __name__)
 @course_api_routes.route('/list')
 @login_required_api
 def listcourses():
-    courses = db.session.query(Course).all()
+    courses = G.user.courses
     return jsonify(courses=[course.serialize for course in courses])

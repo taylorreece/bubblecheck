@@ -31,7 +31,7 @@ def get(userid):
     else:
         return Response(status=404)
 
-@user_api_routes.route('/token/login', methods=['POST'])
+@user_api_routes.route('/token/request', methods=['POST'])
 def token_login():
     j = request.get_json()
     email = j['email']
@@ -45,8 +45,8 @@ def token_login():
 
 @user_api_routes.route('/token/check', methods=['GET'])
 def token_check():
-    # curl -X GET 'http://localhost:8080/api/user/token/check' -u "MYJWTTOKEN:"
-    token = request.authorization.username
+    # curl -X GET 'http://localhost:8080/api/user/token/check' -H "Authorization: Bearer {{TOKEN}}"
+    token = request.headers.get('Authorization')[7:] # Strip 'Bearer '
     u = User().get_user_by_jwt(token)
     if u:
         return Response("Valid")
