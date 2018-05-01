@@ -15,8 +15,9 @@ def login_required_api(f):
         g.current_user = None
         if 'sessionid' in session:
             g.current_user = User.getUserBySessionID(str(session['sessionid']))
-        if request.values.get('apikey'):
-            g.current_user = User.getUserByAPIKey(str(request.values.get('api_key')))
+        if request.headers.get('Authorization'):
+            token = request.headers.get('Authorization').replace('Bearer ', '')
+            g.current_user = User().get_user_by_jwt(token)
         if g.current_user is None:
         	return ("You need to log in to do that.", 403)
         g.current_user.logged_in = True

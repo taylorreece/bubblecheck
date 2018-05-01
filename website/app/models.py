@@ -9,7 +9,6 @@ import jwt
 
 # ==============================================================================
 # Define a base model for other database tables to inherit
-# We'll use UUIDs in postgresql, but just ids for testing
 class Base(db.Model):
     __abstract__  = True
     id = db.Column(db.Integer, primary_key=True)
@@ -17,9 +16,21 @@ class Base(db.Model):
     modified = db.Column(db.DateTime(timezone=True), nullable=False, server_default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     active   = db.Column(db.Boolean(), nullable=False, default=True)
 
+    sensitive_columns = []
+
+    def serialize(self, show_sensitive_columns=False):
+        """Return object data in easily serializeable format"""
+        return { 
+            c.name: getattr(self, c.name)
+            for c in self.__table__.columns
+            if c.name not in self.sensitive_columns 
+                or show_sensitive_columns
+        }
+
 # ==============================================================================
 class User(UserMixin, Base):
     __tablename__ = 'users'
+    sensitive_columns = ['password']
     email = db.Column(db.Text(), nullable=False, unique=True)
     teachername = db.Column(db.Text(), nullable=False)
     password = db.Column(db.Text(), nullable=False)
@@ -30,7 +41,7 @@ class User(UserMixin, Base):
         back_populates="users"
     )
     logged_in = False
-
+    
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
@@ -58,14 +69,6 @@ class User(UserMixin, Base):
         except jwt.exceptions.DecodeError as e:
             return None
 
-    @property
-    def serialize(self):
-        """Return object data in easily serializeable format"""
-        return { c.name: getattr(self, c.name)
-            for c in self.__table__.columns
-            if c.name not in ['password']
-        }
-
     def __repr__(self):
         return '<User %r (id=%r)>' % (self.email, self.id)
 
@@ -87,7 +90,7 @@ class Course(Base):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
     def __repr__(self):
-        return '<Course %r>' % (self.name)
+        return '<Course %r (id=%r)>' % (self.name, self.id)
 
 # ==============================================================================
 # UserCoursePermission is a many-to-many association between users and courses
@@ -120,7 +123,7 @@ class Section(Base):
     courses_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
 
     def __repr__(self):
-        return '<Section %r>' % (self.name)
+        return '<Section %r, (id=%r)>' % (self.name, self.id)
 
 # ==============================================================================
 class Exam(Base):
@@ -129,4 +132,4 @@ class Exam(Base):
     courses_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
 
     def __repr__(self):
-        return '<Exam %r>' % (self.name)
+        return '<Exam %r, (id=%r)>' % (self.name, self.id)

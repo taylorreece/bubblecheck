@@ -21,7 +21,7 @@ class Random(object):
         return '{}@{}.com'.format(self.letters(8), self.letters(5))
     def user(self):
         u = User(teachername=self.letters(), email=self.email())
-        u.set_password(self.letters())
+        u.set_password('foobar123!')
         return u
     def course(self):
         return Course(name=random.choice(['Geometry','Algebra','US History','Physics','Dance','Music','Art','World History','Band','French','Japanese','German']))

@@ -1,3 +1,5 @@
+import jwt
+
 from flask import Blueprint
 from flask import jsonify
 from flask import render_template
@@ -20,19 +22,20 @@ def add():
     )
     new_user.set_password(j['password'])
     db.session.add(new_user)
-    db.session.commit();
+    db.session.commit()
     return Response(status=200)
 
-@user_api_routes.route('/get/<userid>', methods=['GET'])
-def get(userid):
-    u = db.session.query(User).filter(User.id==userid).first()
-    if u:
-        return jsonify(u.serialize)
-    else:
-        return Response(status=404)
+# @user_api_routes.route('/get/<userid>', methods=['GET'])
+# def get(userid):
+#     u = db.session.query(User).filter(User.id==userid).first()
+#     if u:
+#         return jsonify(u.serialize())
+#     else:
+#         return Response(status=404)
 
 @user_api_routes.route('/token/request', methods=['POST'])
 def token_login():
+    # curl -X POST http://localhost:8080/api/user/token/request --data '{"email":"8LYEEX4H@IRLUH.com","password":"foobar123!"}' -H "Content-Type: application/json"
     j = request.get_json()
     email = j['email']
     password = j['password']
@@ -46,9 +49,9 @@ def token_login():
 @user_api_routes.route('/token/check', methods=['GET'])
 def token_check():
     # curl -X GET 'http://localhost:8080/api/user/token/check' -H "Authorization: Bearer {{TOKEN}}"
-    token = request.headers.get('Authorization')[7:] # Strip 'Bearer '
+    token = request.headers.get('Authorization').replace('Bearer ', '')
     u = User().get_user_by_jwt(token)
     if u:
-        return Response("Valid")
+        return Response("Valid; Expires %s" % jwt.decode(token, verify=False)['exp'])
     else:
         return Response("Invalid", 401)

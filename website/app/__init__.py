@@ -31,18 +31,12 @@ app.register_blueprint(exam_api_routes, url_prefix='/api/exam')
 from app.api.user import user_api_routes
 app.register_blueprint(user_api_routes, url_prefix='/api/user')
 
-# NOTE TO SELF:
-# When we implement login, we'll just need to set session['jwt_token'] to some valid token
-# EZPZ
 @login_manager.request_loader
-def load_user_request(user_id):
-    token = None
-    if 'jwt_token' in session:
-        token = str(session['jwt_token'])
-    elif request.authorization:
-        token = request.authorization.username
-    if token:
-        return User().get_user_by_jwt(token)
+def load_user_from_request(request):
+    api_key = request.args.get('Authorization')
+    if api_key:
+        token = api_key.replace('Bearer ', '')
+        return User.get_user_by_jwt(token)
     else:
         return None
 

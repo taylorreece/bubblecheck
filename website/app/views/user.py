@@ -23,10 +23,6 @@ def login():
 @user_web_routes.route('/login', methods=['POST'])
 def login_post():
     form = LoginForm(request.form)
-    print(vars(form.email))
-    print(form.validate())
-    print(form.email.data)
-    print(form.password.data)
     if form.validate():
         _user = db.session.query(User).filter_by(email=form.email.data).first()
         if _user and _user.check_password(form.password.data):
@@ -34,7 +30,7 @@ def login_post():
             return redirect(url_for('user_web_routes.dashboard'))
         else:
             flash('danger|Login Incorrect')
-            return render_template('user/login.html', form=form)
+            return render_template('user/login.html', form=form), 401
     else:
         return render_template('user/login.html', form=form)
 
