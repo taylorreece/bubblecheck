@@ -1,0 +1,29 @@
+[ ] API
+    [ ] Courses
+        [ ] New Course
+        [ ] New Sections
+        [ ] Update Course
+        [ ] Delete course
+        [ ] List Courses
+        [ ] Get course
+    [ ] Exam
+        [ ] New exam
+        [ ] Update exam
+        [ ] Delete exam
+        [ ] Get exam
+        [ ] List exams for course
+    [ ] Student Exam
+        [ ] Upload File (web)
+        [ ] Upload results (phone)
+        [ ] Delete
+        [ ] Get student exams for exam
+    [ ] User
+        [X] Create user
+        [ ] Update user
+        [X] Get API token
+        [X] Check API token
+        [X] Renew API token
+        [ ] Get user info
+    [ ] Exam Shares
+        [ ] Create
+        [ ] Delete

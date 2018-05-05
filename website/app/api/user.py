@@ -1,6 +1,8 @@
+import json 
 import jwt
 
 from flask import Blueprint
+from flask import g
 from flask import jsonify
 from flask import render_template
 from flask import request
@@ -42,7 +44,10 @@ def token_login():
     u = db.session.query(User).filter(User.email==email).first()
     if u and u.check_password(password):
         password = u.password
-        return Response(u.create_jwt(), 200)
+        return Response(
+            response=json.dumps({'jwt_token': u.create_jwt()}),
+            status=200,
+            mimetype='application/json')
     else:
         return ('Bad password', 401)
 
@@ -55,3 +60,11 @@ def token_check():
         return Response("Valid; Expires %s" % jwt.decode(token, verify=False)['exp'])
     else:
         return Response("Invalid", 401)
+
+@user_api_routes.route('/token/renew', methods=['GET'])
+@login_required
+def token_renew():
+    return Response(
+        response=json.dumps({'jwt_token': g.user.create_jwt()}),
+        status=200,
+        mimetype='application/json')

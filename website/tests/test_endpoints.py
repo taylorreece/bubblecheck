@@ -4,6 +4,7 @@ sys.path.append('..')
 
 import base64
 import json
+import time
 import unittest
 from app import app
 from test_models import Random
@@ -34,14 +35,21 @@ class CheckAPI(unittest.TestCase):
             content_type='application/json'
         )
         self.assertEqual(200, response.status_code)
-        token = response.data.decode()
-        self.assertEqual(200, 
-            self.client.get(
+        token = json.loads(response.data.decode())['jwt_token']
+        response = self.client.get(
                 '/api/user/token/check',
                 headers={
                     'Authorization': 'Bearer {}'.format(token)
+                })
+        self.assertEqual(200, response.status_code)
+        time.sleep(2)
+        response = self.client.get(
+                '/api/user/token/renew',
+                headers={
+                    'Authorization': 'Bearer {}'.format(token)
                 }
-            ).status_code)
+            )
+        self.assertEqual(200, response.status_code)
         # Assert logins work
         self.assertEqual(200,
             self.client.post(
