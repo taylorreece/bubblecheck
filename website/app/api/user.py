@@ -16,13 +16,13 @@ user_api_routes = Blueprint('user_api_routes', __name__)
 
 @user_api_routes.route('/add', methods=['POST'])
 def add():
-    j = request.get_json()
+    request_data = request.get_json()
     new_user = User(
-        teachername = j['teachername'],
-        email = j['email'],
+        teachername = request_data['teachername'],
+        email = request_data['email'],
         is_admin = False
     )
-    new_user.set_password(j['password'])
+    new_user.set_password(request_data['password'])
     db.session.add(new_user)
     db.session.commit()
     return Response(status=200)
