@@ -7,6 +7,11 @@ import json
 import time
 import unittest
 from app import app
+from app import db
+from app.models import Course
+from app.models import Section
+from app.models import User
+from app.models import UserCoursePermission
 from test_models import Random
 
 rand = Random()
@@ -19,6 +24,25 @@ class CheckAPI(unittest.TestCase):
     def test_get_marketing_pages(self):
         self.assertEqual(200, self.client.get('/').status_code)
     
+    def test_course_endpoints(self):
+        user = rand.user()
+        course1 = rand.course()
+        course2 = rand.course()
+        permission1 = UserCoursePermission(permission = 'owner', user = user, course = course1)
+        permission2 = UserCoursePermission(permission = 'owner', user = user, course = course2)
+        db.session.add_all([user, course1, course2, permission1, permission2])
+        db.session.commit()
+        db.session.refresh(course1)
+        self.client.post(
+            '/user/login',
+            data=dict(email=user.email, password='foobar123!'), 
+            follow_redirects=True)
+        course_list_response = self.client.get('/api/course/list')
+        courses = json.loads(course_list_response.data.decode())
+        self.assertEqual(course_list_response.status_code, 200)
+        self.assertEqual(len(courses), 2)
+        self.assertIn(course1.id, [x['id'] for x in courses])
+
     def test_user_endpoints(self):
         user = rand.user()
         user_data = user.serialize()
