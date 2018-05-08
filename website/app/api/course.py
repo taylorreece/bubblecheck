@@ -3,6 +3,7 @@ from flask import g
 from flask import render_template
 from flask import jsonify
 from flask import request
+from flask import Response
 from flask_login import login_required
 
 from app.models import Course
@@ -21,7 +22,12 @@ def listcourses():
 @course_api_routes.route('/add', methods=['POST'])
 @login_required
 def addcourse():
-    request_data = request.get_json()
+    if request.mimetype == 'application/json':
+        request_data = request.get_json()
+    elif request.mimetype == 'multipart/form-data':
+        request_data = request.form
+    else:
+        return Response('Unacceptable request', status=400)
     new_course = Course(name=request_data['name'])
     for section_name in request_data['sections']:
         new_course.sections.append(Section(name=section_name))
