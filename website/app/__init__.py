@@ -24,11 +24,11 @@ from app.views.user import user_web_routes
 app.register_blueprint(user_web_routes, url_prefix='/user')
 
 # Register API Blueprints
-from app.api.course import course_api_routes
+from app.api.course_api import course_api_routes
 app.register_blueprint(course_api_routes, url_prefix='/api/course')
-from app.api.exam import exam_api_routes
+from app.api.exam_api import exam_api_routes
 app.register_blueprint(exam_api_routes, url_prefix='/api/exam')
-from app.api.user import user_api_routes
+from app.api.user_api import user_api_routes
 app.register_blueprint(user_api_routes, url_prefix='/api/user')
 
 @login_manager.request_loader
