@@ -21,4 +21,3 @@ class CourseForm(Form):
         StringField("Section"),
         min_entries = 1
     )
-    
