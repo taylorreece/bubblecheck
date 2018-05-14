@@ -1,4 +1,5 @@
 from flask import Flask
+from flask import g
 from flask import request
 from flask import session
 from flask_sqlalchemy import SQLAlchemy
@@ -33,13 +34,15 @@ app.register_blueprint(user_api_routes, url_prefix='/api/user')
 
 @login_manager.request_loader
 def load_user_from_request(request):
-    api_key = request.args.get('Authorization')
+    api_key = request.headers.get('Authorization')
     if api_key:
         token = api_key.replace('Bearer ', '')
-        return User.get_user_by_jwt(token)
+        g.user = User().get_user_by_jwt(token=token)
+        return g.user
     else:
         return None
 
 @login_manager.user_loader
 def load_user_session(user_id):
-    return db.session.query(User).filter(User.id==user_id).first()
+    g.user = db.session.query(User).filter(User.id==user_id).first()
+    return g.user

@@ -4,8 +4,14 @@ sys.path.append('..')
 
 import base64
 import json
+import time
 import unittest
 from app import app
+from app import db
+from app.models import Course
+from app.models import Section
+from app.models import User
+from app.models import UserCoursePermission
 from test_models import Random
 
 rand = Random()
@@ -18,6 +24,39 @@ class CheckAPI(unittest.TestCase):
     def test_get_marketing_pages(self):
         self.assertEqual(200, self.client.get('/').status_code)
     
+    def test_course_endpoints(self):
+        user = rand.user()
+        course1 = rand.course()
+        course2 = rand.course()
+        permission1 = UserCoursePermission(permission = 'owner', user = user, course = course1)
+        permission2 = UserCoursePermission(permission = 'owner', user = user, course = course2)
+        db.session.add_all([user, course1, course2, permission1, permission2])
+        db.session.commit()
+        db.session.refresh(course1)
+        self.client.post(
+            '/user/login',
+            data=dict(email=user.email, password='foobar123!'), 
+            follow_redirects=True)
+        new_course_data = {
+            'name': 'my_new_course',
+            'sections': [
+                'my_section_1',
+                'my_section_2',
+                'my_section_3'
+            ]
+        }
+        course_add_response = self.client.post(
+            '/api/course/add', 
+            data=json.dumps(new_course_data),
+            content_type='application/json')
+        self.assertEqual(course_add_response.status_code, 200)
+        course_list_response = self.client.get('/api/course/list')
+        courses = json.loads(course_list_response.data.decode())
+        self.assertEqual(course_list_response.status_code, 200)
+        self.assertEqual(len(courses), 3) # Two created by models above, one by POST
+        self.assertIn(course1.id, [course['id'] for course in courses])
+        self.assertIn(new_course_data['name'], [course['name'] for course in courses])        
+
     def test_user_endpoints(self):
         user = rand.user()
         user_data = user.serialize()
@@ -28,20 +67,26 @@ class CheckAPI(unittest.TestCase):
                 data=json.dumps(user_data),
                 content_type='application/json'
             ).status_code)
-        response = self.client.post(
+        token_requeset_response = self.client.post(
             '/api/user/token/request',
             data=json.dumps(user_data),
-            content_type='application/json'
-        )
-        self.assertEqual(200, response.status_code)
-        token = response.data.decode()
-        self.assertEqual(200, 
-            self.client.get(
+            content_type='application/json')
+        self.assertEqual(200, token_requeset_response.status_code)
+        token = json.loads(token_requeset_response.data.decode())['jwt_token']
+        token_check_response = self.client.get(
                 '/api/user/token/check',
                 headers={
                     'Authorization': 'Bearer {}'.format(token)
+                })
+        self.assertEqual(200, token_check_response.status_code)
+        time.sleep(2)
+        token_renew_response = self.client.get(
+                '/api/user/token/renew',
+                headers={
+                    'Authorization': 'Bearer {}'.format(token)
                 }
-            ).status_code)
+            )
+        self.assertEqual(200, token_renew_response.status_code)
         # Assert logins work
         self.assertEqual(200,
             self.client.post(

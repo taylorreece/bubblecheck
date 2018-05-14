@@ -84,11 +84,6 @@ class Course(Base):
     sections = relationship("Section")
     exams = relationship("Exam")
 
-    @property
-    def serialize(self):
-       """Return object data in easily serializeable format"""
-       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
     def __repr__(self):
         return '<Course %r (id=%r)>' % (self.name, self.id)
 
