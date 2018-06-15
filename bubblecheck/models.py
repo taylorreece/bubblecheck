@@ -89,22 +89,25 @@ class Course(Base):
     def __repr__(self):
         return '<Course %r (id=%r)>' % (self.name, self.id)
 
-    def toJSON(self):
-        return {
-            'name':        self.name,
-            'id':          self.id,
-            'sections':    [section.toJSON() for section in self.sections],
-            'exams':       [exam.toJSON() for exam in self.exams],
-            'other_users': [permission.toJSON() for permission in 
-                            db.session.query(UserCoursePermission)
-                            .filter(UserCoursePermission.courses_id==self.id)
-                            .filter(UserCoursePermission.users_id!=current_user.id)
-                            ],
-            'permission':  db.session.query(UserCoursePermission)
+    def toJSON(self, show_users=False, show_exams=False, show_sections=False):
+        course_json = {
+            'name':     self.name,
+            'id':       self.id,
+            'permission': db.session.query(UserCoursePermission)
                             .filter(UserCoursePermission.courses_id==self.id)
                             .filter(UserCoursePermission.users_id==current_user.id)
                             .first().permission.name
         }
+        if show_users:
+            course_json['other_users'] = [permission.toJSON() for permission in 
+                            db.session.query(UserCoursePermission)
+                            .filter(UserCoursePermission.courses_id==self.id)
+                            .filter(UserCoursePermission.users_id!=current_user.id)]
+        if show_exams:
+            course_json['exams'] = [exam.toJSON() for exam in self.exams]
+        if show_sections:
+            course_json['sections'] = [section.toJSON() for section in self.sections]
+        return course_json
 
 # ==============================================================================
 # UserCoursePermission is a many-to-many association between users and courses
@@ -113,15 +116,15 @@ class Course(Base):
 # editor - can edit the course; cannot delete or share results
 # readonly - can only view exam results
 class CoursePermissionEnum(enum.Enum):
-    owner = 1
-    editor = 2
-    readonly = 3
+    own = 30
+    edit = 20
+    view = 10
 
 class UserCoursePermission(Base):
     __tablename__ = 'users_courses_permissions'
     users_id    = db.Column(db.Integer, db.ForeignKey('users.id'))
     courses_id  = db.Column(db.Integer, db.ForeignKey('courses.id'))
-    permission  = db.Column(db.Enum(CoursePermissionEnum), nullable=False, default=CoursePermissionEnum.owner)
+    permission  = db.Column(db.Enum(CoursePermissionEnum), nullable=False, default=CoursePermissionEnum.own)
     user = relationship('User')
     course = relationship('Course')
 

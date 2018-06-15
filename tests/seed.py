@@ -22,7 +22,7 @@ course2.sections = [
     Section(name='Hour 7')
 ]
 user.courses = [course1, course2]
-friend_permission = UserCoursePermission(permission = 'editor', user = friend, course = course1)
+friend_permission = UserCoursePermission(permission = 'edit', user = friend, course = course1)
 
 db.session.add(user)
 db.session.add(friend)
