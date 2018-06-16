@@ -16,6 +16,7 @@ from bubblecheck.models import User
 user_api_routes = Blueprint('user_api_routes', __name__)
 
 @user_api_routes.route('/current_user', methods=['GET'])
+@login_required
 def get_current_user():
     return jsonify(current_user.toJSON())
 
@@ -28,10 +29,7 @@ def token_login():
     u = db.session.query(User).filter(User.email==email).first()
     if u and u.check_password(password):
         password = u.password
-        return Response(
-            response=json.dumps({'jwt_token': u.create_jwt()}),
-            status=200,
-            mimetype='application/json')
+        return jsonify(jwt_token=u.create_jwt())
     else:
         return ('Bad password', 401)
 
@@ -41,7 +39,7 @@ def token_check():
     token = request.headers.get('Authorization').replace('Bearer ', '')
     u = User().get_user_by_jwt(token)
     if u:
-        return Response("Valid; Expires %s" % jwt.decode(token, verify=False)['exp'])
+        return jsonify(expires=jwt.decode(token, verify=False)['exp'])
     else:
         return Response("Invalid", 401)
 
@@ -49,7 +47,4 @@ def token_check():
 @login_required
 def token_renew():
     # curl -X GET 'http://localhost:8080/user/token/renew' -H "Authorization: Bearer {{TOKEN}}"
-    return Response(
-        response=json.dumps({'jwt_token': current_user.create_jwt()}),
-        status=200,
-        mimetype='application/json')
+    return jsonify(jwt_token=current_user.create_jwt())

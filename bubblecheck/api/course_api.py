@@ -38,14 +38,14 @@ def course_permission_required(permission):
 def list_courses():
     return jsonify(courses=[course.toJSON() for course in current_user.courses])
 
-@course_api_routes.route('/<int:course_id>', methods=['GET'])
+@course_api_routes.route('/get/<int:course_id>', methods=['GET'])
 @login_required
 @course_permission_required('view')
 def get_course(course_id):
     course = db.session.query(Course).filter(Course.id==course_id).first()
     return jsonify(course.toJSON(show_users=True, show_exams=True, show_sections=True))
 
-@course_api_routes.route('/', methods=['POST'])
+@course_api_routes.route('/add', methods=['POST'])
 @login_required
 def addcourse():
     if request.mimetype == 'application/json':

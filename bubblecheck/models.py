@@ -30,6 +30,7 @@ class User(UserMixin, Base):
     password = db.Column(db.Text(), nullable=False)
     is_admin = db.Column(db.Boolean(), nullable=False, default=False)
     public_uuid = db.Column(db.Text(), nullable=False, default=generate_uuid, unique=True)
+    #icon = db.Column(db.Text(), nullable=False, default='person')
     courses = relationship(
         'Course',
         secondary='users_courses_permissions',
