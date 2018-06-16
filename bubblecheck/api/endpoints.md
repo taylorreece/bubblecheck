@@ -1,6 +1,16 @@
-# API Documentation
+# API Endpoints
+* [User](#user)
+    * [/api/user/current_user](#apiusercurrent_user)
+    * [/api/user/token/request](#apiusertokenrequest)
+    * [/api/user/token/check](#apiusertokencheck)
+    * [/api/user/token/renew](#apiusertokenrenew)
+* [Course](#course)
+    * [/api/course/list](#apicourselist)
+    * [/api/course/get/int:course_id](#apicoursegetintcourse_id)
+    * [/api/course/add](#apicourseadd)
+
 ## User
-**Endpoint**: /api/user/current_user
+### /api/user/current_user
 
 **Method**: GET
 
@@ -16,7 +26,7 @@
 }
 ```
 ----
-**Endpoint**: /api/user/token/request
+### /api/user/token/request
 
 **Method**: POST
 
@@ -34,7 +44,7 @@
 }
 ```
 ----
-**Endpoint**: /api/user/token/check
+### /api/user/token/check
 
 **Method**: GET
 
@@ -47,7 +57,7 @@
 }
 ```
 ----
-**Endpoint**: /api/user/token/renew
+### /api/user/token/renew
 
 **Method**: GET
 
@@ -61,7 +71,7 @@
 ```
 ----
 ## Course
-**Endpoint**: /api/course/list
+### /api/course/list
 
 **Method**: GET
 
@@ -85,7 +95,7 @@
 }
 ```
 ----
-**Endpoint**: /api/course/get/\<int:course_id\>
+### /api/course/get/\<int:course_id\>
 
 **Method**: GET
 
@@ -131,7 +141,7 @@
 }
 ```
 ----
-**Endpoint**: /api/course/add
+### /api/course/add
 
 **Method**: POST
 
