@@ -6,7 +6,9 @@ from flask import Response
 from flask_login import current_user
 from flask_login import login_required
 from functools import wraps
+from werkzeug import MultiDict
 
+from bubblecheck.forms import CourseForm
 from bubblecheck.models import Course
 from bubblecheck.models import CoursePermissionEnum
 from bubblecheck.models import Section
@@ -48,14 +50,8 @@ def get_course(course_id):
 @course_api_routes.route('/add', methods=['POST'])
 @login_required
 def addcourse():
-    if request.mimetype == 'application/json':
-        request_data = MultiDict(request.get_json())
-        form = CourseForm(request_data)
-    elif request.mimetype == 'multipart/form-data':
-        request_data = request.form
-        form = CourseForm()
-    else:
-        return Response('Unacceptable request', status=400)
+    request_data = request.get_json()
+    form = CourseForm(MultiDict(request_data))
     if form.validate():
         new_course = Course(name=request_data['name'])
         for section_name in request_data['sections']:
@@ -66,4 +62,6 @@ def addcourse():
         db.session.refresh(new_course)
         return jsonify(new_course.toJSON(show_sections=True))
     else:
-        return Response('Form validation failed', status=400)
+        resp = jsonify(msg="Form validation errors", errors=form.errors)
+        resp.status_code = 400
+        return resp
