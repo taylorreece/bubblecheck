@@ -26,7 +26,6 @@ def course_permission_required(permission):
                                 .filter(UserCoursePermission.users_id==current_user.id)
                                 .first()
                                 .permission.value)
-            print(permission, type(permission))
             required_permission = CoursePermissionEnum[permission].value
             if required_permission > user_permission:
                 return jsonify(error='You do not have sufficient permissions to access this resource.')
@@ -45,6 +44,18 @@ def list_courses():
 @course_permission_required('view')
 def get_course(course_id):
     course = db.session.query(Course).filter(Course.id==course_id).first()
+    return jsonify(course.toJSON(show_users=True, show_exams=True, show_sections=True))
+
+@course_api_routes.route('/update/<int:course_id>', methods=['POST'])
+@login_required
+@course_permission_required('edit')
+def update_course(course_id):
+    request_data = request.get_json()
+    course = db.session.query(Course).filter(Course.id==course_id).first()
+    course.name = request_data['name']
+    db.session.add(course)
+    db.session.commit()
+    db.session.refresh(course)
     return jsonify(course.toJSON(show_users=True, show_exams=True, show_sections=True))
 
 @course_api_routes.route('/add', methods=['POST'])

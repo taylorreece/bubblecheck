@@ -138,14 +138,64 @@ class CheckAPI(unittest.TestCase):
 
         course_id = course_list_data['courses'][0]['id']
 
-        # TODO: pull down data on specific course, add a section, etc.
-        
+
+        # Create a new course and verify that we now have two
+        new_course_json = {
+            'name': 'World History',
+            'sections': [
+                'Hour 5',
+                'Hour 6',
+                'Hour 7',
+                'Study Hall'
+            ]
+        }
+
+        course_add_response = self.client.post(
+            '/api/course/add',
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)},
+            content_type='application/json',
+            data=json.dumps(new_course_json)
+        )
+
+        self.assertEqual(course_add_response.status_code, 200)
+        course_add_response_json = json.loads(course_add_response.data.decode())
+        new_course_id = course_add_response_json['id']
+        self.assertIsInstance(new_course_id, int)
+        self.assertEqual(len(course_add_response_json['sections']), 4)
+        self.assertEqual(course_add_response_json['sections'][1]['name'], 'Hour 6')
+
+        course_list_response = self.client.get(
+            '/api/course/list',
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)}
+        )
+        course_list_data = json.loads(course_list_response.data.decode())
+        self.assertEqual(len(course_list_data['courses']), 2)
+
+        # Update the course we created
+        update_course_json = {
+            'name': 'Early World History'
+        }
+
+        course_update_response = self.client.post(
+            '/api/course/update/{course_id}'.format(course_id=new_course_id),
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)},
+            content_type='application/json',
+            data=json.dumps(update_course_json)
+        )
+        self.assertEqual(course_update_response.status_code, 200)
+
+        get_updated_course_response = self.client.get(
+            '/api/course/get/{course_id}'.format(course_id=new_course_id),
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)}
+        )
+        get_updated_course_response_json = json.loads(get_updated_course_response.data.decode())
+        self.assertEqual(get_updated_course_response.status_code, 200)
+        self.assertEqual(get_updated_course_response_json['name'], 'Early World History')
+        self.assertEqual(len(get_updated_course_response_json['sections']), 4)
+
 if __name__ == '__main__':
     unittest.main()
 
-# Create course using JWT token
-
-# Create a course and sections via API using cookies
 
 # Edit the course name via API
 
