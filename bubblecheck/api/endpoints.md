@@ -6,7 +6,7 @@
     * [/api/user/token/renew](#apiusertokenrenew)
 * [Course](#course)
     * [/api/course/list](#apicourselist)
-    * [/api/course/get/int:course_id](#apicoursegetintcourse_id)
+    * [/api/course/get/course_id](#apicoursegetcourse_id)
     * [/api/course/add](#apicourseadd)
 
 ## User
@@ -95,7 +95,7 @@
 }
 ```
 ----
-### /api/course/get/\<int:course_id\>
+### /api/course/get/\<course_id\>
 
 **Method**: GET
 

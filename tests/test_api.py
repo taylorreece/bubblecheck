@@ -5,7 +5,7 @@ import string
 import sys
 import unittest
 sys.path.append('..')
-from bubblecheck.models import User
+from bubblecheck.models import User, Course, Section
 from bubblecheck import app
 from bubblecheck import db
 
@@ -103,6 +103,43 @@ class CheckAPI(unittest.TestCase):
                 headers={'Authorization': 'Bearer {}'.format(token)})
         self.assertEqual(token_renew_response.status_code, 200)
 
+    def test_course_endpoints(self):
+        # Set up a user and a course
+        user = rand.user()
+        user.set_password('foobar123!')
+        course = Course(name='US History')
+        section1 = Section(name='Hour 1')
+        section2 = Section(name='Hour 2')
+        course.sections = [section1, section2]
+        user.courses.append(course)
+        db.session.add_all([user, course, section1, section2])
+        db.session.commit()
+
+        token_request_json = {
+            'email': user.email,
+            'password': 'foobar123!'
+        }
+
+        # Verify we can get a JWT token
+        token_request_response = self.client.post(
+            '/api/user/token/request',
+            data=json.dumps(token_request_json),
+            content_type='application/json')
+        jwt_token = json.loads(token_request_response.data.decode())['jwt_token']
+
+        # Verify that we have a single course for this user
+        course_list_response = self.client.get(
+            '/api/course/list',
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)}
+        )
+        course_list_data = json.loads(course_list_response.data.decode())
+        self.assertEqual(len(course_list_data['courses']), 1)
+        self.assertEqual(course_list_data['courses'][0]['name'], 'US History')
+
+        course_id = course_list_data['courses'][0]['id']
+
+        # TODO: pull down data on specific course, add a section, etc.
+        
 if __name__ == '__main__':
     unittest.main()
 
