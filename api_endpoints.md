@@ -6,8 +6,11 @@
     * [/api/user/token/renew](#apiusertokenrenew)
 * [Course](#course)
     * [/api/course/list](#apicourselist)
-    * [/api/course/get/course_id](#apicoursegetcourse_id)
+    * [/api/course/get/\<course_id\>](#apicoursegetcourse_id)
     * [/api/course/add](#apicourseadd)
+    * [/api/course/update/\<course_id\>](#apicourseupdatecourse_id)
+    * [/api/course/\<course_id\>/section/add](#apicoursecourseidsectionadd)
+    * [/api/course/\<course_id\>/section/\<section_id\>/update](#apicoursecourseidsectionsectionidupdate)
 
 ## User
 ### /api/user/current_user
@@ -176,4 +179,79 @@
   ]
 }
 ```
+----
+### /api/course/update/\<course_id\>
+
+**Method**: POST
+
+**Requires**: Login, course edit
+
+**Sample Input**:
+```json
+{
+    "name": "Early US History"
+}
+```
+
+**Sample Output**:
+```json
+{
+  "id": 123, 
+  "name": "Early US History",
+  "permission": "own", 
+  "sections": [
+    {
+      "id": 1, 
+      "name": "Hour 3"
+    }, 
+    {
+      "id": 2, 
+      "name": "Hour 5"
+    }
+  ]
+}
+```
+----
+### /api/course/\<course_id\>/section/add
+
+**Method**: POST
+
+**Requires**: Login, course edit
+
+**Sample Input**:
+```json
+{
+  "name": "Hour 6"
+}
+```
+
+**Sample Output**:
+```json
+{
+  "id": 456,
+  "name": "Hour 6"
+}
+```
+----
+### /api/course/<course_id>/section/<section_id>/update
+
+**Method**: POST
+
+**Requires**: Login, course edit
+
+**Sample Input**:
+```json
+{
+  "name": "Hour 6a"
+}
+```
+
+**Sample Output**:
+```json
+{
+  "id": 456,
+  "name": "Hour 6a"
+}
+```
+----
 ## Exam

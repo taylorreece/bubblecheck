@@ -8,7 +8,7 @@ sys.path.append('..')
 from bubblecheck.models import User, Course, Section
 from bubblecheck import app
 from bubblecheck import db
-
+from http import HTTPStatus
 
 class Random(object):
     def letters(self,N=8):
@@ -37,33 +37,33 @@ class CheckAPI(unittest.TestCase):
         db.session.add(user)
         db.session.commit()
 
-        # Verify bad credentials return a 401
+        # Verify bad credentials return a 401, UNAUTHORIZED
         response = self.client.post(
             '/user/login',
             data=dict(email=user.email, password='wrong_password'),
             follow_redirects=True)
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
         # The user shouldn't be able to access an endpoint protected by @login_required
         # They should instead be redirected, so get a 302 return code
         response = self.client.get('/user/testlogin')
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND) # FOUND implies redirected
 
         # Verify good credentials return a 200
         login_response = self.client.post(
             '/user/login',
             data=dict(email=user.email, password='foobar123!'),
             follow_redirects=True)
-        self.assertEqual(login_response.status_code, 200)
+        self.assertEqual(login_response.status_code, HTTPStatus.OK)
 
         # The user should now be able to access /user/testlogin, protected by @login_required decorator
         response = self.client.get('/user/testlogin')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
         # Test logout; we should now not be able to access the testlogin endpoint once more
         self.client.get('/user/logout')
         response = self.client.get('/user/testlogin')
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND) # FOUND implies redirected
     
     def test_jwt_login(self):
         """ Create a user, create a JWT token, verify it works, and that fake tokens don't """
@@ -81,27 +81,27 @@ class CheckAPI(unittest.TestCase):
             '/api/user/token/request',
             data=json.dumps(token_request_json),
             content_type='application/json')
-        self.assertEqual(token_request_response.status_code, 200)
+        self.assertEqual(token_request_response.status_code, HTTPStatus.OK)
         token = json.loads(token_request_response.data.decode())['jwt_token']
 
         # Verify we can use that token to check login
         token_check_response = self.client.get(
                 '/user/testlogin',
                 headers={'Authorization': 'Bearer {}'.format(token)})
-        self.assertEqual(token_check_response.status_code, 200)
+        self.assertEqual(token_check_response.status_code, HTTPStatus.OK)
 
         # Verify we get a 302 if we try to use a bunk JWT
         bad_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IkZha2VFbWFpbEBmb29iYXIuY29tIiwiZXhwIjozMjUyNTc0NzcxMX0.GUbxfg3OWSp4yei5GTzXRNF_KF5xacNSb4mcrcr6LoI'
         bad_token_check_response = self.client.get(
             '/user/testlogin',
             headers={'Authorization': 'Bearer {}'.format(bad_token)})
-        self.assertEqual(bad_token_check_response.status_code, 302)
+        self.assertEqual(bad_token_check_response.status_code, HTTPStatus.FOUND)  # FOUND implies redirected
 
         # Verify we can renew a JWT token
         token_renew_response = self.client.get(
                 '/api/user/token/renew',
                 headers={'Authorization': 'Bearer {}'.format(token)})
-        self.assertEqual(token_renew_response.status_code, 200)
+        self.assertEqual(token_renew_response.status_code, HTTPStatus.OK)
 
     def test_course_endpoints(self):
         # Set up a user and a course
@@ -157,7 +157,7 @@ class CheckAPI(unittest.TestCase):
             data=json.dumps(new_course_json)
         )
 
-        self.assertEqual(course_add_response.status_code, 200)
+        self.assertEqual(course_add_response.status_code, HTTPStatus.OK)
         course_add_response_json = json.loads(course_add_response.data.decode())
         new_course_id = course_add_response_json['id']
         self.assertIsInstance(new_course_id, int)
@@ -182,7 +182,7 @@ class CheckAPI(unittest.TestCase):
             content_type='application/json',
             data=json.dumps(update_course_json)
         )
-        self.assertEqual(course_update_response.status_code, 200)
+        self.assertEqual(course_update_response.status_code, HTTPStatus.OK)
 
         get_updated_course_response = self.client.get(
             '/api/course/get/{course_id}'.format(course_id=new_course_id),
@@ -193,14 +193,45 @@ class CheckAPI(unittest.TestCase):
         self.assertEqual(get_updated_course_response_json['name'], 'Early World History')
         self.assertEqual(len(get_updated_course_response_json['sections']), 4)
 
+        # Add a new section to our newly created course
+        new_section_json = {'name': 'New Section foo'}
+        add_new_section_response = self.client.post(
+            '/api/course/{course_id}/section/add'.format(course_id=new_course_id),
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)},
+            content_type='application/json',
+            data=json.dumps(new_section_json)
+        )
+        self.assertEqual(add_new_section_response.status_code, HTTPStatus.OK)
+        new_section_id = json.loads(add_new_section_response.data.decode())['id']
+
+        get_updated_course_response = self.client.get(
+            '/api/course/get/{course_id}'.format(course_id=new_course_id),
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)}
+        )
+        get_updated_course_response_json = json.loads(get_updated_course_response.data.decode())
+        self.assertEqual(len(get_updated_course_response_json['sections']), 5)
+        self.assertIn('New Section foo', [section['name'] for section in get_updated_course_response_json['sections']])
+
+        # Update the section we created 
+        update_section_json = {'name': 'Updated section name'}
+        update_section_response = self.client.post(
+            '/api/course/{course_id}/section/{section_id}/update'.format(course_id=new_course_id, section_id=new_section_id),
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)},
+            content_type='application/json',
+            data=json.dumps(update_section_json)
+        )
+        self.assertEqual(add_new_section_response.status_code, HTTPStatus.OK)
+        self.assertEqual(json.loads(update_section_response.data.decode())['id'], new_section_id)
+        get_updated_course_response = self.client.get(
+            '/api/course/get/{course_id}'.format(course_id=new_course_id),
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)}
+        )
+        get_updated_course_response_json = json.loads(get_updated_course_response.data.decode())
+        self.assertIn('Updated section name', [section['name'] for section in get_updated_course_response_json['sections']])
+
+
 if __name__ == '__main__':
     unittest.main()
-
-
-# Edit the course name via API
-
-# Add a section via API
-# Verify number of sections
 
 # Delete a section via API
 # Verify new number of sections

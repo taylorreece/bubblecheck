@@ -6,6 +6,7 @@ from flask import Response
 from flask_login import current_user
 from flask_login import login_required
 from functools import wraps
+from http import HTTPStatus
 from werkzeug import MultiDict
 
 from bubblecheck.forms import CourseForm
@@ -73,6 +74,39 @@ def addcourse():
         db.session.refresh(new_course)
         return jsonify(new_course.toJSON(show_sections=True))
     else:
-        resp = jsonify(msg="Form validation errors", errors=form.errors)
-        resp.status_code = 400
+        resp = jsonify(error="Form validation errors", errors=form.errors)
+        resp.status_code = HTTPStatus.BAD_REQUEST
+        return resp
+
+@course_api_routes.route('/<int:course_id>/section/add', methods=['POST'])
+@login_required
+@course_permission_required('edit')
+def course_section_add(course_id):
+    request_data = request.get_json()
+    new_section = Section(name=request_data['name'])
+    course = db.session.query(Course).filter(Course.id==course_id).first()
+    course.sections.append(new_section)
+    db.session.add(course)
+    db.session.commit()
+    db.session.refresh(new_section)
+    return jsonify(new_section.toJSON())
+
+@course_api_routes.route('/<int:course_id>/section/<int:section_id>/update', methods=['POST'])
+@login_required
+@course_permission_required('edit')
+def course_section_update(course_id, section_id):
+    request_data = request.get_json()
+    section = (db.session.query(Section)
+                .filter(Section.id==section_id)
+                .filter(Section.courses_id==course_id)
+                .first())
+    if section:
+        section.name = request_data['name']
+        db.session.add(section)
+        db.session.commit()
+        db.session.refresh(section)
+        return jsonify(section.toJSON())
+    else:
+        resp = jsonify(error='No such courseid/sessionid combination found.')
+        resp.status_code = HTTPStatus.BAD_REQUEST
         return resp
