@@ -34,6 +34,8 @@ class User(UserMixin, Base):
     courses = relationship(
         'Course',
         secondary='users_courses_permissions',
+        # This secondary join makes it so we show only active courses... there might be a better way to do this.
+        secondaryjoin="and_(UserCoursePermission.courses_id==Course.id, Course.active)",
         back_populates='users'
     )
     
