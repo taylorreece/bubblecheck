@@ -34,7 +34,6 @@ class User(UserMixin, Base):
     courses = relationship(
         'Course',
         secondary='users_courses_permissions',
-        # This secondary join makes it so we show only active courses... there might be a better way to do this.
         secondaryjoin="and_(UserCoursePermission.courses_id==Course.id, Course.active)",
         back_populates='users'
     )
@@ -84,10 +83,11 @@ class Course(Base):
     users = relationship(
         'User',
         secondary='users_courses_permissions',
+        secondaryjoin="and_(UserCoursePermission.users_id==User.id, User.active)",
         back_populates='courses'
     )
-    sections = relationship('Section')
-    exams = relationship('Exam')
+    sections = relationship('Section', primaryjoin="and_(Course.id==Section.courses_id, Section.active)")
+    exams = relationship('Exam', primaryjoin="and_(Course.id==Exam.courses_id, Exam.active)")
 
     def __repr__(self):
         return '<Course %r (id=%r)>' % (self.name, self.id)
@@ -105,7 +105,8 @@ class Course(Base):
             course_json['other_users'] = [permission.toJSON() for permission in 
                             db.session.query(UserCoursePermission)
                             .filter(UserCoursePermission.courses_id==self.id)
-                            .filter(UserCoursePermission.users_id!=current_user.id)]
+                            .filter(UserCoursePermission.users_id!=current_user.id)
+                            if permission.user.active]
         if show_exams:
             course_json['exams'] = [exam.toJSON() for exam in self.exams]
         if show_sections:
@@ -130,7 +131,7 @@ class UserCoursePermission(Base):
     permission  = db.Column(db.Enum(CoursePermissionEnum), nullable=False, default=CoursePermissionEnum.own)
     user = relationship('User')
     course = relationship('Course')
-
+    
     # Don't allow a user to be an owner, and 'readonly' or something
     __table_args__ = (
         db.UniqueConstraint('users_id', 'courses_id', name='unique_user_course_pair'),
