@@ -77,6 +77,13 @@ class User(UserMixin, Base):
         }
 
 # ==============================================================================
+class Colleague(Base):
+    __tablename__ = 'colleagues'
+    colleague1 = db.Column(db.Integer, db.ForeignKey('users.id'))
+    colleague2 = db.Column(db.Integer, db.ForeignKey('users.id'))
+    accepted   = db.Column(db.Boolean(), default=False)
+
+# ==============================================================================
 class Course(Base):
     __tablename__ = 'courses'
     name    = db.Column(db.Text(), nullable=False)
@@ -131,7 +138,7 @@ class UserCoursePermission(Base):
     permission  = db.Column(db.Enum(CoursePermissionEnum), nullable=False, default=CoursePermissionEnum.own)
     user = relationship('User')
     course = relationship('Course')
-    
+
     # Don't allow a user to be an owner, and 'readonly' or something
     __table_args__ = (
         db.UniqueConstraint('users_id', 'courses_id', name='unique_user_course_pair'),
