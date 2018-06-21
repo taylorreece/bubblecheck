@@ -61,7 +61,7 @@ def update_course(course_id):
 
 @course_api_routes.route('/add', methods=['POST'])
 @login_required
-def addcourse():
+def add_course():
     request_data = request.get_json()
     form = CourseForm(MultiDict(request_data))
     if form.validate():
@@ -77,6 +77,16 @@ def addcourse():
         resp = jsonify(error="Form validation errors", errors=form.errors)
         resp.status_code = HTTPStatus.BAD_REQUEST
         return resp
+
+@course_api_routes.route('/<int:course_id>', methods=['DELETE'])
+@login_required
+@course_permission_required('own')
+def delete_course(course_id):
+    course = db.session.query(Course).filter(Course.id==course_id).first()
+    course.active = False
+    db.session.add(course)
+    db.session.commit()
+    return jsonify(message="Successfully deleted course")
 
 @course_api_routes.route('/<int:course_id>/section/add', methods=['POST'])
 @login_required
@@ -106,6 +116,24 @@ def course_section_update(course_id, section_id):
         db.session.commit()
         db.session.refresh(section)
         return jsonify(section.toJSON())
+    else:
+        resp = jsonify(error='No such courseid/sessionid combination found.')
+        resp.status_code = HTTPStatus.BAD_REQUEST
+        return resp
+
+@course_api_routes.route('/<int:course_id>/section/<int:section_id>', methods=['DELETE'])
+@login_required
+@course_permission_required('edit')
+def course_section_delete(course_id, section_id):
+    section = (db.session.query(Section)
+                .filter(Section.id==section_id)
+                .filter(Section.courses_id==course_id)
+                .first())
+    if section:
+        section.active = False
+        db.session.add(section)
+        db.session.commit()
+        return jsonify(message="Successfully deleted section.")
     else:
         resp = jsonify(error='No such courseid/sessionid combination found.')
         resp.status_code = HTTPStatus.BAD_REQUEST

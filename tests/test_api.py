@@ -138,7 +138,6 @@ class CheckAPI(unittest.TestCase):
 
         course_id = course_list_data['courses'][0]['id']
 
-
         # Create a new course and verify that we now have two
         new_course_json = {
             'name': 'World History',
@@ -229,14 +228,36 @@ class CheckAPI(unittest.TestCase):
         get_updated_course_response_json = json.loads(get_updated_course_response.data.decode())
         self.assertIn('Updated section name', [section['name'] for section in get_updated_course_response_json['sections']])
 
+        # Delete the section we created
+        delete_section_response = self.client.delete(
+            '/api/course/{course_id}/section/{section_id}'.format(course_id=new_course_id, section_id=new_section_id),
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)}
+        )
+        self.assertEqual(delete_section_response.status_code, HTTPStatus.OK)
+        get_updated_course_response = self.client.get(
+            '/api/course/get/{course_id}'.format(course_id=new_course_id),
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)}
+        )
+        get_updated_course_response_json = json.loads(get_updated_course_response.data.decode())
+        self.assertEqual(len(get_updated_course_response_json['sections']), 4)
+        self.assertNotIn('Updated section name', [section['name'] for section in get_updated_course_response_json['sections']])
+
+        # Delete our new course, assert we're back to one course
+        delete_course_response = self.client.delete(
+            '/api/course/{course_id}'.format(course_id=new_course_id),
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)}
+        )
+        self.assertEqual(delete_course_response.status_code, HTTPStatus.OK)
+        course_list_response = self.client.get(
+            '/api/course/list',
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)}
+        )
+        course_list_data = json.loads(course_list_response.data.decode())
+        self.assertEqual(len(course_list_data['courses']), 1)
+        self.assertNotIn('Early World History', [course['name'] for course in course_list_data['courses']])
 
 if __name__ == '__main__':
     unittest.main()
-
-# Delete a section via API
-# Verify new number of sections
-
-# Delete the course via API
 
 # Create an exam via API
 
