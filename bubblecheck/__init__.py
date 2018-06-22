@@ -37,9 +37,9 @@ def load_user_from_request(request):
     else:
         return None
 
-@login_manager.user_loader
-def load_user_session(user_id):
-    return db.session.query(User).filter(User.id==user_id).first()
+# @login_manager.user_loader
+# def load_user_session(user_id):
+#     return db.session.query(User).filter(User.id==user_id).first()
 
 # ===============================================================================
 # Map out some generally non-API routes:
