@@ -1,4 +1,4 @@
-"""empty message
+"""Creation of 'colleagues' table
 
 Revision ID: 2aecebdb8223
 Revises: fb46951d763b

@@ -25,12 +25,12 @@ class Base(db.Model):
 # ==============================================================================
 class User(UserMixin, Base):
     __tablename__ = 'users'
-    email = db.Column(db.Text(), nullable=False, unique=True)
+    email = db.Column(db.Text(), nullable=False, index=True, unique=True)
     teachername = db.Column(db.Text(), nullable=False)
     password = db.Column(db.Text(), nullable=False)
     is_admin = db.Column(db.Boolean(), nullable=False, default=False)
-    public_uuid = db.Column(db.Text(), nullable=False, default=generate_uuid, unique=True)
-    #icon = db.Column(db.Text(), nullable=False, default='person')
+    public_uuid = db.Column(db.Text(), nullable=False, index=True, default=generate_uuid, unique=True)
+
     courses = relationship(
         'Course',
         secondary='users_courses_permissions',
@@ -57,7 +57,7 @@ class User(UserMixin, Base):
     def get_user_by_jwt(token):
         try:
             decoded_token = jwt.decode(token, verify=False)
-            u = User.query.filter(User.email==decoded_token['email']).first()
+            u = User.query.filter(User.email==decoded_token['email']).one_or_none()
             if u and jwt.decode(token, u.password, algorithms=['HS256']):
                 return u
             else:
@@ -86,7 +86,7 @@ class Colleague(Base):
 # ==============================================================================
 class Course(Base):
     __tablename__ = 'courses'
-    name    = db.Column(db.Text(), nullable=False)
+    name  = db.Column(db.Text(), nullable=False)
     users = relationship(
         'User',
         secondary='users_courses_permissions',
