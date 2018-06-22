@@ -114,6 +114,7 @@ class CheckAPI(unittest.TestCase):
         self.assertEqual(token_renew_response.status_code, HTTPStatus.OK)
 
     def test_course_endpoints(self):
+        """ Create a course, add some sections, delete some things, and rename some things """
         ########################################################
         # Set up a user and a course
         user = rand.user()

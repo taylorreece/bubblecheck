@@ -28,9 +28,9 @@ def login_post():
     # TODO: No need for validating the form for login?
     form = LoginForm(request.form)
     if form.validate():
-        _user = db.session.query(User).filter_by(email=form.email.data).first()
-        if _user and _user.check_password(form.password.data):
-            login_user(_user)
+        u = User.query.filter(User.email==form.email.data).one()
+        if u and u.check_password(form.password.data):
+            login_user(u)
             return redirect(url_for('user_web_routes.dashboard'))
         else:
             flash('Login Incorrect', 'error')

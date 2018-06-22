@@ -33,13 +33,13 @@ def load_user_from_request(request):
     api_key = request.headers.get('Authorization')
     if api_key:
         token = api_key.replace('Bearer ', '')
-        return User().get_user_by_jwt(token=token)
+        return User.get_user_by_jwt(token=token)
     else:
         return None
 
 @login_manager.user_loader
 def load_user_session(user_id):
-    return db.session.query(User).filter(User.id==user_id).first()
+    return User.query.get(user_id)
 
 # ===============================================================================
 # Map out some generally non-API routes:

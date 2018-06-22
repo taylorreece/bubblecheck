@@ -26,7 +26,7 @@ def token_login():
     request_data = request.get_json()
     email = request_data['email']
     password = request_data['password']
-    u = db.session.query(User).filter(User.email==email).first()
+    u = User.query.filter(User.email==email).one()
     if u and u.check_password(password):
         password = u.password
         return jsonify(jwt_token=u.create_jwt())
@@ -37,7 +37,7 @@ def token_login():
 def token_check():
     # curl -X GET 'http://localhost:8080/user/token/check' -H "Authorization: Bearer {{TOKEN}}"
     token = request.headers.get('Authorization').replace('Bearer ', '')
-    u = User().get_user_by_jwt(token)
+    u = User.get_user_by_jwt(token)
     if u:
         return jsonify(expires=jwt.decode(token, verify=False)['exp'])
     else:

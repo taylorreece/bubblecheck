@@ -7,7 +7,8 @@ ENV = 'development'
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'app.db')
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 DATABASE_CONNECT_OPTIONS = {}
-SQLALCHEMY_ECHO = True
+# Echo out every SQL transaction
+#SQLALCHEMY_ECHO = True
 
 # Set to 2 threads per processor core
 THREADS_PER_PAGE = 2

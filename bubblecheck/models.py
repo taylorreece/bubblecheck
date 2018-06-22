@@ -54,10 +54,10 @@ class User(UserMixin, Base):
             algorithm='HS256'
         ).decode()
 
-    def get_user_by_jwt(self, token):
+    def get_user_by_jwt(token):
         try:
             decoded_token = jwt.decode(token, verify=False)
-            u = db.session.query(User).filter(User.email==decoded_token['email']).first()
+            u = User.query.filter(User.email==decoded_token['email']).first()
             if u and jwt.decode(token, u.password, algorithms=['HS256']):
                 return u
             else:
@@ -103,14 +103,14 @@ class Course(Base):
         course_json = {
             'name':     self.name,
             'id':       self.id,
-            'permission': db.session.query(UserCoursePermission)
+            'permission': UserCoursePermission.query
                             .filter(UserCoursePermission.courses_id==self.id)
                             .filter(UserCoursePermission.users_id==current_user.id)
-                            .first().permission.name
+                            .one().permission.name
         }
         if show_users:
             course_json['other_users'] = [permission.toJSON() for permission in 
-                            db.session.query(UserCoursePermission)
+                            UserCoursePermission.query
                             .filter(UserCoursePermission.courses_id==self.id)
                             .filter(UserCoursePermission.users_id!=current_user.id)
                             if permission.user.active]

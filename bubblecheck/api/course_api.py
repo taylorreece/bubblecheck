@@ -22,7 +22,7 @@ def course_permission_required(permission):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            user_permission = (db.session.query(UserCoursePermission)
+            user_permission = (UserCoursePermission.query
                                 .filter(UserCoursePermission.courses_id==kwargs['course_id'])
                                 .filter(UserCoursePermission.users_id==current_user.id)
                                 .first()
@@ -44,7 +44,7 @@ def list_courses():
 @login_required
 @course_permission_required('view')
 def get_course(course_id):
-    course = db.session.query(Course).filter(Course.id==course_id).first()
+    course = Course.query.get(course_id)
     return jsonify(course.toJSON(show_users=True, show_exams=True, show_sections=True))
 
 @course_api_routes.route('/update/<int:course_id>', methods=['POST'])
@@ -52,7 +52,7 @@ def get_course(course_id):
 @course_permission_required('edit')
 def update_course(course_id):
     request_data = request.get_json()
-    course = db.session.query(Course).filter(Course.id==course_id).first()
+    course = Course.query.get(course_id)
     course.name = request_data['name']
     db.session.add(course)
     db.session.commit()
@@ -82,7 +82,7 @@ def add_course():
 @login_required
 @course_permission_required('own')
 def delete_course(course_id):
-    course = db.session.query(Course).filter(Course.id==course_id).first()
+    course = Course.query.get(course_id)
     course.active = False
     db.session.add(course)
     db.session.commit()
@@ -94,7 +94,7 @@ def delete_course(course_id):
 def course_section_add(course_id):
     request_data = request.get_json()
     new_section = Section(name=request_data['name'])
-    course = db.session.query(Course).filter(Course.id==course_id).first()
+    course = Course.query.get(course_id)
     course.sections.append(new_section)
     db.session.add(course)
     db.session.commit()
@@ -106,11 +106,8 @@ def course_section_add(course_id):
 @course_permission_required('edit')
 def course_section_update(course_id, section_id):
     request_data = request.get_json()
-    section = (db.session.query(Section)
-                .filter(Section.id==section_id)
-                .filter(Section.courses_id==course_id)
-                .first())
-    if section:
+    section = Section.query.get(section_id)
+    if section and section.courses_id == course_id:
         section.name = request_data['name']
         db.session.add(section)
         db.session.commit()
@@ -125,11 +122,8 @@ def course_section_update(course_id, section_id):
 @login_required
 @course_permission_required('edit')
 def course_section_delete(course_id, section_id):
-    section = (db.session.query(Section)
-                .filter(Section.id==section_id)
-                .filter(Section.courses_id==course_id)
-                .first())
-    if section:
+    section = Section.query.get(section_id)
+    if section and section.courses_id == course_id:
         section.active = False
         db.session.add(section)
         db.session.commit()
