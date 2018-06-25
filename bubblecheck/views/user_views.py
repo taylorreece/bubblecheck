@@ -57,3 +57,7 @@ def forgot():
 @login_required
 def testlogin():
     return "You are logged in as {}".format(current_user.email), 200
+
+@user_web_routes.route('/register', methods=['GET'])
+def register_user():
+    return "You register here."
