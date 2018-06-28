@@ -10,6 +10,7 @@ from flask import Response
 from flask import session
 from flask_login import login_required
 from flask_login import current_user
+from http import HTTPStatus
 from bubblecheck import db
 from bubblecheck.models import User
 
@@ -26,12 +27,14 @@ def token_login():
     request_data = request.get_json()
     email = request_data['email']
     password = request_data['password']
-    u = User.query.filter(User.email==email).one()
+    u = User.query.filter(User.email==email).one_or_none()
     if u and u.check_password(password):
         password = u.password
         return jsonify(jwt_token=u.create_jwt())
     else:
-        return ('Bad password', 401)
+        resp = jsonify(error='No such user found')
+        resp.status_code = HTTPStatus.NOT_FOUND
+        return resp
 
 @user_api_routes.route('/token/check', methods=['GET'])
 def token_check():
