@@ -43,7 +43,9 @@ def load_user_session(user_id):
 
 # ===============================================================================
 # Map out some generally non-API routes:
+from bubblecheck.views import default_view_routes
 from bubblecheck.views import user_views
+app.register_blueprint(default_view_routes)
 app.register_blueprint(user_views.user_web_routes, url_prefix='/user')
 
 # ===============================================================================

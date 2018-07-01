@@ -3,11 +3,11 @@
 {% block body %}
 <div class="row">
 	<div>
-		<form class="form-signin" method="POST" action="{{ url_for('user_web_routes.login') }}">
+		<form class="form-signin" method="POST" action="{{ url_for('user_web_routes.user_login_view') }}">
 			<h2 class="form-signin-heading">Please sign in</h2>
 			{{ form.email(class="form-control", placeholder="Email address", autofocus=True) }}
 			{{ form.password(class="form-control", placeholder="Password") }}
-			{{ form.remember_me() }} {{ form.remember_me.label}} | <strong><a href="{{ url_for('user_web_routes.forgot') }}">Forgot my passwrod</a></strong>
+			{{ form.remember_me() }} {{ form.remember_me.label}} | <strong><a href="{{ url_for('user_web_routes.user_forgot_password_view') }}">Forgot my passwrod</a></strong>
 			<div class="form-group"> 
 				<div>
 					<button type="submit" class="btn btn-default">Sign In</button>
