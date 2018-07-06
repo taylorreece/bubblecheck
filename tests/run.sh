@@ -3,8 +3,7 @@ set -xe
 
 CWD=$pwd
 DIR=$(dirname $0)
-cd $DIR
-cd ..
+cd $DIR/..
 source python-venv/bin/activate
 FLASK_APP=bubblecheck flask db upgrade
 cd $DIR

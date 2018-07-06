@@ -103,3 +103,7 @@ ENV/
 
 # VS Code
 *.vscode/
+
+# Virtual Environments
+python-venv/
+node-venv/
