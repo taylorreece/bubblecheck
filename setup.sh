@@ -9,5 +9,3 @@ python-venv/bin/pip install -r requirements.txt
 python-venv/bin/python -m nodeenv node-venv
 source node-venv/bin/activate
 npm install -g vue-cli
-
-source python-venv/bin/activate
