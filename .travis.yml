@@ -3,4 +3,4 @@ python:
   - 3.5
 install:
   - bash setup.sh
-script: ./tests/run.sh
+script: tests/run.sh
