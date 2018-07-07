@@ -3,5 +3,13 @@
 
 This repo contains all the code we'll need for the BubbleCheck rewrite.
 
-* website/ contains web front-end stuff
+* bubblecheck/ contains web front-end stuff and API stuff
+* bubblecheck-vue/ contains vue code that gets placed into bubblecheck/templates and bubblecheck/static at build time
 * aws/ contains lambda functions, cloudformation information, etc.
+
+To run the vue frontend live, 
+ $ cd bubblecheck-vue
+ $ npm run dev
+
+To build it,
+ $ npm run build
