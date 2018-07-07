@@ -3,5 +3,5 @@ python:
   - 3.5
 install:
   - bash setup.sh
-  - bash build_scripts/build_vue.sh
+  - bash build/build_vue.sh
 script: tests/run.sh
