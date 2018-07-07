@@ -2,7 +2,7 @@ language: python
 python:
   - 3.5
 install:
-  - bash setup.sh
+  - setup.sh
 script: 
   - build/build_vue.sh
   - tests/run.sh
