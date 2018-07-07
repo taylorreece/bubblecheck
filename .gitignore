@@ -107,3 +107,4 @@ ENV/
 # Virtual Environments
 python-venv/
 node-venv/
+node_modules/

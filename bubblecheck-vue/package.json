@@ -1,8 +1,8 @@
 {
-  "name": "frontend",
+  "name": "vue",
   "version": "1.0.0",
   "description": "A Vue.js project",
-  "author": "Taylor Reece <taylor.reece@zuerchertech.com>",
+  "author": "taylorreece <taylor.reece@gmail.com>",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
