@@ -11,4 +11,6 @@ source node-venv/bin/activate
 npm install --global @vue/cli @vue/cli-init
 
 # Install packages from bubblecheck-vue/packages.json
-npm install bubblecheck-vue
+cd bubblecheck-vue
+npm install
+cd - 
