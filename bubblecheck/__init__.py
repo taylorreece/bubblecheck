@@ -7,7 +7,7 @@ from flask_login import LoginManager
 
 app = Flask(__name__)
 
-if os.path.isfile(os.path.join(os.path.dirname(__file__), '..', 'production.py')):
+if os.path.isfile(os.path.join(os.path.dirname(__file__), '..', 'config', 'production.py')):
     app.logger.info("Using production configuration")
     app.config.from_object('config.production')
 else:
