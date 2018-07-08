@@ -3,8 +3,11 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import Navbar from './components/Navbar.vue'
 
 Vue.config.productionTip = false
+
+Vue.component('bubblecheck-navbar', Navbar)
 
 /* eslint-disable no-new */
 new Vue({
