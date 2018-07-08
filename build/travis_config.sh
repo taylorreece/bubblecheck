@@ -1,4 +1,4 @@
 #!/bin/bash
 
 DIR=$(dirname $0)
-cp ../config/travis-ci.py ../config/production.py
+cp $DIR/../config/travis-ci.py $DIR/../config/production.py
