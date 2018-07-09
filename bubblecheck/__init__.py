@@ -26,7 +26,6 @@ from bubblecheck.models import Section
 # Configure out login manager
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = "/login"
 login_manager.login_message = "You are not currently logged in."
 @login_manager.request_loader
 def load_user_from_request(request):

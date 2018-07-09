@@ -15,6 +15,3 @@
     </header>
     <!-- Header end -->
 </template>
-
-<style>
-</style>

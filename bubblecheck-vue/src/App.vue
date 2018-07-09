@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="bubblecheck-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <div class="bubblecheck-layout mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-drawer">
       <bubblecheck-navbar />
       <bubblecheck-drawer />
       <!-- Main Content start -->
@@ -13,21 +13,34 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
-  name: 'App'
+  name: 'App',
+  data () {
+    return {
+      logged_in: false,
+      user: null
+    }
+  },
+  created () {
+    axios.get('/api/user/current_user')
+      .then(response => {
+        this.user = response.data
+        console.log(this.user)
+      })
+      .catch(error => {
+        console.log(error.response.data)
+        console.log(error.response.status)
+        console.log(error.response.headers)
+      })
+  }
 }
 </script>
 
 <style>
-.bubblecheck-layout .mdl-layout__header .mdl-layout__drawer-button {
-    color: rgba(0, 0, 0, 0.54);
-}
 .bubblecheck-drawer {
     border: none;
-}
-
-.bubblecheck-logo-image {
-    width: 25px;
 }
 
 /* iOS Safari specific workaround */
@@ -72,6 +85,7 @@ export default {
     background-color: #00BCD4;
     color: #37474F;
 }
+
 .bubblecheck-navigation .mdl-navigation__link .material-icons {
     font-size: 24px;
     color: rgba(255, 255, 255, 0.56);
