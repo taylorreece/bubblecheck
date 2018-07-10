@@ -4,7 +4,7 @@
         <nav class="title mdl-color--primary mdl-color-text--primary-contrast">
             BubbleCheck
         </nav>
-        <nav class="bubblecheck-navigation">
+        <nav class="bubblecheck-navigation mdl-navigation">
             <a class="mdl-navigation__link" href=""><i class="material-icons" role="presentation">home</i>Home</a>
             <router-link v-if="this.$parent.user==null" class="mdl-navigation__link" :to="'Login'"><i class="material-icons">computer</i>Log in</router-link>
             <a v-if="this.$parent.user" class="mdl-navigation__link" href="#"><i class="material-icons">school</i>Courses</a>
@@ -22,6 +22,7 @@
 .bubblecheck-drawer {
     border-right: 0;
 }
+
 .bubblecheck-drawer .title {
   box-sizing: border-box;
   display: -webkit-flex;
@@ -64,6 +65,7 @@
     -ms-flex-align: center;
     align-items: center;
 }
+
 .bubblecheck-layout .bubblecheck-navigation .mdl-navigation__link {
     display: -webkit-flex !important;
     display: -ms-flexbox !important;
