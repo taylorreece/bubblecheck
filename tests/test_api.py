@@ -49,7 +49,7 @@ class CheckAPI(unittest.TestCase):
         # The user shouldn't be able to access an endpoint protected by @login_required
         # They should instead be redirected, so get a 302 return code
         response = self.client.get('/user/testlogin')
-        self.assertEqual(response.status_code, HTTPStatus.FOUND) # FOUND implies redirected
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
         ########################################################
         # Verify good credentials return a 200
@@ -69,7 +69,7 @@ class CheckAPI(unittest.TestCase):
         # Test logout; we should now not be able to access the testlogin endpoint once more
         self.client.get('/user/logout')
         response = self.client.get('/user/testlogin')
-        self.assertEqual(response.status_code, HTTPStatus.FOUND) # FOUND implies redirected
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
     
     def test_jwt_login(self):
         """ Create a user, create a JWT token, verify it works, and that fake tokens don't """
@@ -104,7 +104,7 @@ class CheckAPI(unittest.TestCase):
         bad_token_check_response = self.client.get(
             '/user/testlogin',
             headers={'Authorization': 'Bearer {}'.format(bad_token)})
-        self.assertEqual(bad_token_check_response.status_code, HTTPStatus.FOUND)  # FOUND implies redirected
+        self.assertEqual(bad_token_check_response.status_code, HTTPStatus.UNAUTHORIZED)
 
         ########################################################
         # Verify we can renew a JWT token
