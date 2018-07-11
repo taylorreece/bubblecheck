@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="bubblecheck-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
-      <bubblecheck-navbar />
-      <bubblecheck-drawer />
+      <bubblecheck-navbar v-bind:user="user" v-bind:courses="courses" />
+      <bubblecheck-drawer v-bind:user="user" v-bind:courses="courses" />
       <!-- Main Content start -->
       <main class="mdl-layout__content">
         <router-view/>
@@ -19,15 +19,18 @@ export default {
   name: 'App',
   data () {
     return {
-      logged_in: false,
-      user: null
+      user: null,
+      courses: null
     }
   },
   created () {
     axios.get('/api/user/current_user')
       .then(response => {
         this.user = response.data
-        console.log(this.user)
+        axios.get('/api/course/list')
+          .then(courseResponse => {
+            this.courses = courseResponse.data.courses
+          })
       })
       .catch(error => {
         console.log(error.response.data)

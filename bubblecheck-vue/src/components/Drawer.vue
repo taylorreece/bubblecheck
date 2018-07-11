@@ -5,18 +5,27 @@
             BubbleCheck
         </nav>
         <nav class="bubblecheck-navigation mdl-navigation">
-            <a class="mdl-navigation__link" href=""><i class="material-icons" role="presentation">home</i>Home</a>
-            <router-link v-if="this.$parent.user==null" class="mdl-navigation__link" :to="'Login'"><i class="material-icons">computer</i>Log in</router-link>
-            <a v-if="this.$parent.user" class="mdl-navigation__link" href="#"><i class="material-icons">school</i>Courses</a>
+            <a class="mdl-navigation__link mdl-menu__item--full-bleed-divider" href=""><i class="material-icons" role="presentation">home</i>Home</a>
+            <router-link v-if="user==null" class="mdl-navigation__link" :to="'Login'"><i class="material-icons">computer</i>Log in</router-link>
+            <a v-if="user" class="mdl-navigation__link" href="#"><i class="material-icons">school</i>Courses</a>
+            <ul class="mdl-list">
+                <li v-for="course in courses" v-bind:key="course.id" class="mdl-list__item mdl-navigation__link">{{ course.name }}</li>
+            </ul>
             <div class="mdl-layout-spacer"></div>
-            <a v-if="this.$parent.user" class="mdl-navigation__link" href="#"><i class="material-icons">person</i>{{ this.$parent.user.teachername }}</a>
-            <a v-if="this.$parent.user" class="mdl-navigation__link" href="#"><i class="material-icons">email</i>{{ this.$parent.user.email }}</a>
-            <a v-if="this.$parent.user" class="mdl-navigation__link" href="/user/logout"><i class="material-icons">exit_to_app</i>Log out</a>
+            <a v-if="user" class="mdl-navigation__link" href="#"><i class="material-icons">person</i>{{ this.$parent.user.teachername }}</a>
+            <a v-if="user" class="mdl-navigation__link" href="#"><i class="material-icons">email</i>{{ this.$parent.user.email }}</a>
+            <a v-if="user" class="mdl-navigation__link" href="/user/logout"><i class="material-icons">exit_to_app</i>Log out</a>
             <a class="mdl-navigation__link" href="#"><i class="material-icons" role="presentation">help_outline</i><span class="visuallyhidden">Help</span></a>
         </nav>
     </div>
     <!-- Drawer End -->
 </template>
+
+<script>
+export default {
+  props: ['user', 'courses']
+}
+</script>
 
 <style>
 .bubblecheck-drawer {
