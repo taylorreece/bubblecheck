@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="bubblecheck-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <div class="bubblecheck-layout mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-drawer">
       <bubblecheck-navbar v-bind:user="user" v-bind:courses="courses" />
       <bubblecheck-drawer v-bind:user="user" v-bind:courses="courses" />
       <!-- Main Content start -->

@@ -40,7 +40,7 @@ def course_permission_required(permission):
 def list_courses():
     return jsonify(courses=[course.toJSON() for course in current_user.courses])
 
-@course_api_routes.route('/get/<int:course_id>', methods=['GET'])
+@course_api_routes.route('/<int:course_id>', methods=['GET'])
 @login_required
 @course_permission_required('view')
 def get_course(course_id):

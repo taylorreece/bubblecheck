@@ -4,6 +4,7 @@ const routerOptions = [
   { path: '/', component: 'Home' },
   { path: '/about', component: 'About' },
   { path: '/login', component: 'Login' },
+  { path: '/course/:courseid', component: 'Course', name: 'course' },
   { path: '*', component: 'NotFound' }
 ]
 

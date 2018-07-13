@@ -6,7 +6,7 @@
         <div class="mdl-card__supporting-text">
             <form class="form-signin" method="POST" action="/user/login">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" type="text" id="email" name="email">
+                    <input class="mdl-textfield__input" type="email" id="email" name="email">
                     <label class="mdl-textfield__label" for="email">Email Address</label>
                 </div>
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">

@@ -56,8 +56,8 @@ class CheckAPI(unittest.TestCase):
         login_response = self.client.post(
             '/user/login',
             data=dict(email=user.email, password='foobar123!'),
-            follow_redirects=True)
-        self.assertEqual(login_response.status_code, HTTPStatus.OK)
+            follow_redirects=False)
+        self.assertNotEqual(login_response.status_code, HTTPStatus.UNAUTHORIZED)
 
         ########################################################
         # The user should now be able to access /user/testlogin, 
@@ -200,7 +200,7 @@ class CheckAPI(unittest.TestCase):
         self.assertEqual(course_update_response.status_code, HTTPStatus.OK)
 
         get_updated_course_response = self.client.get(
-            '/api/course/get/{course_id}'.format(course_id=new_course_id),
+            '/api/course/{course_id}'.format(course_id=new_course_id),
             headers={'Authorization': 'Bearer {}'.format(jwt_token)}
         )
         get_updated_course_response_json = json.loads(get_updated_course_response.data.decode())
@@ -221,7 +221,7 @@ class CheckAPI(unittest.TestCase):
         new_section_id = json.loads(add_new_section_response.data.decode())['id']
 
         get_updated_course_response = self.client.get(
-            '/api/course/get/{course_id}'.format(course_id=new_course_id),
+            '/api/course/{course_id}'.format(course_id=new_course_id),
             headers={'Authorization': 'Bearer {}'.format(jwt_token)}
         )
         get_updated_course_response_json = json.loads(get_updated_course_response.data.decode())
@@ -240,7 +240,7 @@ class CheckAPI(unittest.TestCase):
         self.assertEqual(add_new_section_response.status_code, HTTPStatus.OK)
         self.assertEqual(json.loads(update_section_response.data.decode())['id'], new_section_id)
         get_updated_course_response = self.client.get(
-            '/api/course/get/{course_id}'.format(course_id=new_course_id),
+            '/api/course/{course_id}'.format(course_id=new_course_id),
             headers={'Authorization': 'Bearer {}'.format(jwt_token)}
         )
         get_updated_course_response_json = json.loads(get_updated_course_response.data.decode())
@@ -254,7 +254,7 @@ class CheckAPI(unittest.TestCase):
         )
         self.assertEqual(delete_section_response.status_code, HTTPStatus.OK)
         get_updated_course_response = self.client.get(
-            '/api/course/get/{course_id}'.format(course_id=new_course_id),
+            '/api/course/{course_id}'.format(course_id=new_course_id),
             headers={'Authorization': 'Bearer {}'.format(jwt_token)}
         )
         get_updated_course_response_json = json.loads(get_updated_course_response.data.decode())
