@@ -100,11 +100,6 @@ export default {
     padding: 0px 16px;
 }
 
-.bubblecheck-layout .bubblecheck-navigation .mdl-navigation__link:hover {
-    background-color: #00BCD4;
-    color: #37474F;
-}
-
 .bubblecheck-navigation .mdl-navigation__link .material-icons,
 .bubblecheck-navigation .drawer-info-text .material-icons {
     font-size: 24px;

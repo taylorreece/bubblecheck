@@ -1,7 +1,10 @@
 <template>
     <div>
-        Course id {{ $route.params.courseid }}
-        {{ course }}
+        <span v-if="loading">Loading...</span>
+        <div v-else>
+            Course id {{ $route.params.courseid }}
+            {{ course }}
+        </div>
     </div>
 </template>
 
@@ -11,6 +14,7 @@ import axios from 'axios'
 export default {
   data () {
     return {
+      loading: true,
       course: null
     }
   },
@@ -22,9 +26,11 @@ export default {
   },
   methods: {
     fetchCourseData () {
+      this.loading = true
       axios.get('/api/course/' + this.$route.params.courseid)
         .then(response => {
           this.course = response.data
+          this.loading = false
         })
         .catch(error => {
           console.log(error.response.data)

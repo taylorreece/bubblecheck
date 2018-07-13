@@ -19,5 +19,6 @@ Vue.use(Router)
 
 export default new Router({
   routes,
-  mode: 'history'
+  mode: 'history',
+  linkActiveClass: 'mdl-navigation__link--current'
 })
