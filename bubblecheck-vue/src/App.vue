@@ -47,4 +47,7 @@ export default {
     -ms-flex-positive: 1;
         flex-grow: 1;
 }
+.mdl-layout__content {
+  padding: 16px;
+}
 </style>
