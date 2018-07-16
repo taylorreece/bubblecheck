@@ -3,6 +3,7 @@ import jwt
 
 from flask import Blueprint
 from flask import g
+from flask import get_flashed_messages
 from flask import jsonify
 from flask import render_template
 from flask import request
@@ -51,3 +52,11 @@ def token_check():
 def token_renew():
     # curl -X GET 'http://localhost:8080/user/token/renew' -H "Authorization: Bearer {{TOKEN}}"
     return jsonify(jwt_token=current_user.create_jwt())
+
+@user_api_routes.route('/flash_messages', methods=['GET'])
+def get_flash_messages():
+    messages = [{
+            'message': message,
+            'category': category
+        } for category, message in get_flashed_messages(with_categories=True)]
+    return jsonify(messages=messages)

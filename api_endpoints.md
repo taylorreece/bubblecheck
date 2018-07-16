@@ -1,6 +1,7 @@
 # API Endpoints
 * [User](#user)
     * [/api/user/current_user](#apiusercurrent_user)
+    * [/api/user/flash_messages](#apiuserflash_messages)
     * [/api/user/token/request](#apiusertokenrequest)
     * [/api/user/token/check](#apiusertokencheck)
     * [/api/user/token/renew](#apiusertokenrenew)
@@ -26,6 +27,24 @@
 	"id": 123, 
 	"public_uuid": "0dc9e8f5-3b1e-4a5e-97ad-1280512ef8e4", 
 	"teachername": "Mr. Smith"
+}
+```
+----
+### /api/user/flash_messages
+
+**Method**: GET
+
+**Requires**: None
+
+**Sample Output**:
+```json
+{
+  "messages": [
+    {
+      "category": "error",
+      "message": "Login Incorrect"
+    }
+  ]
 }
 ```
 ----

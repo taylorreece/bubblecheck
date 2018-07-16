@@ -6,6 +6,7 @@
       <!-- Main Content start -->
       <main class="mdl-layout__content">
         <router-view/>
+        {{ flash_messages }} <!-- TODO: make these messages better -->
       </main>
       <!-- Main Content End -->
     </div> <!-- End bubblecheck-layout -->
@@ -20,10 +21,20 @@ export default {
   data () {
     return {
       user: null,
-      courses: null
+      courses: null,
+      flash_messages: null
     }
   },
   created () {
+    axios.get('/api/user/flash_messages')
+      .then(response => {
+        this.flash_messages = response.data
+      })
+      .catch(error => {
+        console.log(error.response.data)
+        console.log(error.response.status)
+        console.log(error.response.headers)
+      })
     axios.get('/api/user/current_user')
       .then(response => {
         this.user = response.data

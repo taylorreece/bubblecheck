@@ -26,9 +26,10 @@ def user_login_view():
         u = User.query.filter(User.email==form.email.data).one_or_none()
         if u and u.check_password(form.password.data):
             login_user(u)
+            flash('Login Incorrect', 'error')
             return redirect('/')
     flash('Login Incorrect', 'error')
-    return redirect('/login'), 401
+    return redirect('/login')
 
 @user_web_routes.route('/logout', methods=['GET'])
 def user_logout_view():

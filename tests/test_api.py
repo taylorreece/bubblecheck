@@ -42,8 +42,8 @@ class CheckAPI(unittest.TestCase):
         response = self.client.post(
             '/user/login',
             data=dict(email=user.email, password='wrong_password'),
-            follow_redirects=True)
-        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+            follow_redirects=False)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
 
         ########################################################
         # The user shouldn't be able to access an endpoint protected by @login_required
