@@ -1,9 +1,12 @@
 <template>
     <!-- Drawer start -->
     <div class="bubblecheck-drawer mdl-layout__drawer">
-        <nav class="title mdl-color--primary mdl-color-text--primary-contrast">
-            BubbleCheck
-        </nav>
+        <router-link
+            class="title mdl-color--primary mdl-color-text--primary-contrast"
+            :to="{ name: 'home' }"
+        >
+        BubbleCheck
+        </router-link>
         <nav class="bubblecheck-navigation mdl-navigation">
             <router-link v-if="user==null" class="mdl-navigation__link" :to="'Login'"><i class="material-icons">computer</i>Log in</router-link>
             <ul v-if="user" class="mdl-list">
@@ -12,15 +15,17 @@
                     v-bind:key="course.id"
                     :to="{ name: 'course', params: { courseid: course.id }}"
                     class="mdl-list__item mdl-navigation__link"
-                    >
+                >
                     <i class="material-icons">school</i>{{ course.name }}
                 </router-link>
             </ul>
             <div class="mdl-layout-spacer"></div>
-            <span v-if="user" class="drawer-info-text"><i class="material-icons">person</i>{{ this.$parent.user.teachername }}</span>
-            <span v-if="user" class="drawer-info-text"><i class="material-icons">email</i>{{ this.$parent.user.email }}</span>
+            <hr v-if="user" />
+                <span v-if="user" class="drawer-info-text"><i class="material-icons">person</i>{{ this.$parent.user.teachername }}</span>
+                <span v-if="user" class="drawer-info-text"><i class="material-icons">email</i>{{ this.$parent.user.email }}</span>
+            <hr v-if="user" />
             <a v-if="user" class="mdl-navigation__link" href="/user/logout"><i class="material-icons">exit_to_app</i>Log out</a>
-            <a class="mdl-navigation__link" href="#"><i class="material-icons" role="presentation">help_outline</i><span class="visuallyhidden">Help</span></a>
+            <a class="mdl-navigation__link" href="#"><i class="material-icons" role="presentation">help_outline</i><span> Help</span></a>
         </nav>
     </div>
     <!-- Drawer End -->
@@ -104,5 +109,9 @@ export default {
 .bubblecheck-navigation .drawer-info-text .material-icons {
     font-size: 24px;
     margin-right: 32px;
+}
+
+.bubblecheck-drawer a.title {
+    text-decoration: none;
 }
 </style>

@@ -31,9 +31,7 @@ export default {
         this.flash_messages = response.data
       })
       .catch(error => {
-        console.log(error.response.data)
-        console.log(error.response.status)
-        console.log(error.response.headers)
+        console.log(error)
       })
     axios.get('/api/user/current_user')
       .then(response => {
@@ -44,9 +42,7 @@ export default {
           })
       })
       .catch(error => {
-        console.log(error.response.data)
-        console.log(error.response.status)
-        console.log(error.response.headers)
+        console.log(error)
       })
   }
 }
