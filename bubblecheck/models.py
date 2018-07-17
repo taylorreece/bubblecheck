@@ -17,7 +17,7 @@ def generate_uuid():
 # Define a base model for other database tables to inherit
 class Base(db.Model):
     __abstract__  = True
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Text(), primary_key=True, default=generate_uuid)
     created  = db.Column(db.DateTime(timezone=True), nullable=False, server_default=db.func.current_timestamp())
     modified = db.Column(db.DateTime(timezone=True), nullable=False, server_default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     active   = db.Column(db.Boolean(), nullable=False, default=True)
@@ -79,8 +79,8 @@ class User(UserMixin, Base):
 # ==============================================================================
 class Colleague(Base):
     __tablename__ = 'colleagues'
-    colleague1 = db.Column(db.Integer, db.ForeignKey('users.id'))
-    colleague2 = db.Column(db.Integer, db.ForeignKey('users.id'))
+    colleague1 = db.Column(db.Text(), db.ForeignKey('users.id'))
+    colleague2 = db.Column(db.Text(), db.ForeignKey('users.id'))
     accepted   = db.Column(db.Boolean(), default=False)
 
 # ==============================================================================
@@ -133,8 +133,8 @@ class CoursePermissionEnum(enum.Enum):
 
 class UserCoursePermission(Base):
     __tablename__ = 'users_courses_permissions'
-    users_id    = db.Column(db.Integer, db.ForeignKey('users.id'))
-    courses_id  = db.Column(db.Integer, db.ForeignKey('courses.id'))
+    users_id    = db.Column(db.Text(), db.ForeignKey('users.id'))
+    courses_id  = db.Column(db.Text(), db.ForeignKey('courses.id'))
     permission  = db.Column(db.Enum(CoursePermissionEnum), nullable=False, default=CoursePermissionEnum.own)
     user = relationship('User')
     course = relationship('Course')
@@ -155,7 +155,7 @@ class UserCoursePermission(Base):
 class Section(Base):
     __tablename__ = 'sections'
     name = db.Column(db.Text(), nullable=False)
-    courses_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
+    courses_id = db.Column(db.Text(), db.ForeignKey('courses.id'))
 
     def __repr__(self):
         return '<Section %r, (id=%r)>' % (self.name, self.id)
@@ -170,7 +170,7 @@ class Section(Base):
 class Exam(Base):
     __tablename__ = 'exams'
     name = db.Column(db.Text(), nullable=False)
-    courses_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
+    courses_id = db.Column(db.Text(), db.ForeignKey('courses.id'))
 
     def __repr__(self):
         return '<Exam %r, (id=%r)>' % (self.name, self.id)

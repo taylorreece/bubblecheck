@@ -174,7 +174,6 @@ class CheckAPI(unittest.TestCase):
         self.assertEqual(course_add_response.status_code, HTTPStatus.OK)
         course_add_response_json = json.loads(course_add_response.data.decode())
         new_course_id = course_add_response_json['id']
-        self.assertIsInstance(new_course_id, int)
         self.assertEqual(len(course_add_response_json['sections']), 4)
         self.assertEqual(course_add_response_json['sections'][1]['name'], 'Hour 6')
 

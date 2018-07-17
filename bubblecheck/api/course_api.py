@@ -40,14 +40,14 @@ def course_permission_required(permission):
 def list_courses():
     return jsonify(courses=[course.toJSON() for course in current_user.courses])
 
-@course_api_routes.route('/<int:course_id>', methods=['GET'])
+@course_api_routes.route('/<course_id>', methods=['GET'])
 @login_required
 @course_permission_required('view')
 def get_course(course_id):
     course = Course.query.get(course_id)
     return jsonify(course.toJSON(show_users=True, show_exams=True, show_sections=True))
 
-@course_api_routes.route('/update/<int:course_id>', methods=['POST'])
+@course_api_routes.route('/update/<course_id>', methods=['POST'])
 @login_required
 @course_permission_required('edit')
 def update_course(course_id):
@@ -78,7 +78,7 @@ def add_course():
         resp.status_code = HTTPStatus.BAD_REQUEST
         return resp
 
-@course_api_routes.route('/<int:course_id>', methods=['DELETE'])
+@course_api_routes.route('/<course_id>', methods=['DELETE'])
 @login_required
 @course_permission_required('own')
 def delete_course(course_id):
@@ -88,7 +88,7 @@ def delete_course(course_id):
     db.session.commit()
     return jsonify(message="Successfully deleted course")
 
-@course_api_routes.route('/<int:course_id>/section/add', methods=['POST'])
+@course_api_routes.route('/<course_id>/section/add', methods=['POST'])
 @login_required
 @course_permission_required('edit')
 def course_section_add(course_id):
@@ -101,7 +101,7 @@ def course_section_add(course_id):
     db.session.refresh(new_section)
     return jsonify(new_section.toJSON())
 
-@course_api_routes.route('/<int:course_id>/section/<int:section_id>/update', methods=['POST'])
+@course_api_routes.route('/<course_id>/section/<section_id>/update', methods=['POST'])
 @login_required
 @course_permission_required('edit')
 def course_section_update(course_id, section_id):
@@ -118,7 +118,7 @@ def course_section_update(course_id, section_id):
         resp.status_code = HTTPStatus.BAD_REQUEST
         return resp
 
-@course_api_routes.route('/<int:course_id>/section/<int:section_id>', methods=['DELETE'])
+@course_api_routes.route('/<course_id>/section/<section_id>', methods=['DELETE'])
 @login_required
 @course_permission_required('edit')
 def course_section_delete(course_id, section_id):
