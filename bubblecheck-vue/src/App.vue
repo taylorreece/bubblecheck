@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <div class="bubblecheck-page">
     <bubblecheck-navbar v-bind:user="user" v-bind:courses="courses" />
-    <div class="row">
-      <div class="col-md-4 col-lg-3">
+    <div class="row bubblecheck-content">
+      <div class="col-md-3 col-lg-2">
         <bubblecheck-sidebar v-bind:user="user" v-bind:courses="courses" />
       </div>
-      <div class="col-md-8 col-lg-9">
+      <div class="col-md-9 col-lg-10">
         <router-view/>
       </div>
     </div>
@@ -48,4 +48,10 @@ export default {
 </script>
 
 <style>
+.bubblecheck-page {
+  height: 100vh;
+}
+.bubblecheck-content {
+  height: calc(100% - 70px);
+}
 </style>
