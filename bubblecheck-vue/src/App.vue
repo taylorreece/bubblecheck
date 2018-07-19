@@ -52,6 +52,6 @@ export default {
   height: 100vh;
 }
 .bubblecheck-content {
-  height: calc(100% - 70px);
+  height: calc(100vh - 4.125rem);
 }
 </style>
