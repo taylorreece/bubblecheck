@@ -1,34 +1,39 @@
 <template>
-    <div class="login-page">
-        <div class="mdl-card login-card mdl-shadow--4dp">
-            <div class="mdl-card__title mdl-color--primary mdl-color-text--white">
-                <h2 class="mdl-card__title-text">Log in</h2>
-            </div>
-            <div class="mdl-card__supporting-text">
-                <form class="form-signin" method="POST" action="/user/login">
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input class="mdl-textfield__input" type="email" id="email" name="email">
-                        <label class="mdl-textfield__label" for="email">Email Address</label>
+    <div>
+        <form method="POST" action="/user/login">
+            <fieldset>
+                <legend class="doc">Log In</legend>
+                <div class="row responsive-label">
+                    <div class="col-sm-12 col-md-3">
+                        <label for="email" class="">Email</label>
                     </div>
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input class="mdl-textfield__input" type="password" id="password" name="password">
-                        <label class="mdl-textfield__label" for="password">Password</label>
+                    <div class="col-sm-12 col-md-9">
+                        <input type="email" id="email" placeholder="email" name="email"/>
                     </div>
-                    <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored ">Sign In</button>
-                    | <a href="#">Forgot my password</a>
-                </form>
-            </div>
-        </div>
+                </div>
+                <div class="row responsive-label">
+                    <div class="col-sm-12 col-md-3">
+                        <label for="password">Password</label>
+                    </div>
+                    <div class="col-sm-12 col-md-9">
+                        <input type="password" id="password" placeholder="Password" name="password"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-9 col-md-offset-3">
+                        <button type="submit">Sign In</button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
     </div>
 </template>
 
 <style>
-.login-page {
-    align-items: center;
-    display: flex;
-    justify-content: center;
+.responsive-label {
+    align-items:center
 }
-.login-card {
-    margin-top: 10px;
+@media (min-width: 768px) {
+    .responsive-label .col-md-3{text-align:right}
 }
 </style>

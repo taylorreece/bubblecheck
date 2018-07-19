@@ -1,15 +1,14 @@
 <template>
   <div>
-    <div class="bubblecheck-layout mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-drawer">
-      <bubblecheck-navbar v-bind:user="user" v-bind:courses="courses" />
-      <bubblecheck-drawer v-bind:user="user" v-bind:courses="courses" />
-      <!-- Main Content start -->
-      <main class="mdl-layout__content">
+    <bubblecheck-navbar v-bind:user="user" v-bind:courses="courses" />
+    <div class="row">
+      <div class="col-md-4 col-lg-3">
+        <bubblecheck-drawer v-bind:user="user" v-bind:courses="courses" />
+      </div>
+      <div class="col-md-8 col-lg-9">
         <router-view/>
-        {{ flash_messages }} <!-- TODO: make these messages better -->
-      </main>
-      <!-- Main Content End -->
-    </div> <!-- End bubblecheck-layout -->
+      </div>
+    </div>
   </div>
 </template>
 
@@ -49,12 +48,4 @@ export default {
 </script>
 
 <style>
-.bubblecheck-navigation {
--webkit-flex-grow: 1;
-    -ms-flex-positive: 1;
-        flex-grow: 1;
-}
-.mdl-layout__content {
-  padding: 16px;
-}
 </style>
