@@ -1,7 +1,7 @@
 <template>
     <!-- Header start -->
     <header>
-        Bubblecheck
+        <a href='/' class="logo">Bubblecheck</a>
     </header>
     <!-- Header end -->
 </template>

@@ -1,6 +1,6 @@
 <template>
     <!-- Drawer start -->
-    <nav>
+    <nav class="bubblecheck-sidebar">
         <router-link :to="{ name: 'home' }">
             BubbleCheck
         </router-link>
@@ -33,4 +33,10 @@ export default {
 </script>
 
 <style>
+.bubblecheck-sidebar {
+    margin-top: 0px;
+    margin-left: 0px;
+    border-top: 0px;
+    border-left: 0px;
+}
 </style>

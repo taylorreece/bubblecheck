@@ -3,7 +3,7 @@
     <bubblecheck-navbar v-bind:user="user" v-bind:courses="courses" />
     <div class="row">
       <div class="col-md-4 col-lg-3">
-        <bubblecheck-drawer v-bind:user="user" v-bind:courses="courses" />
+        <bubblecheck-sidebar v-bind:user="user" v-bind:courses="courses" />
       </div>
       <div class="col-md-8 col-lg-9">
         <router-view/>
