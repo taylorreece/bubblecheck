@@ -7,7 +7,7 @@
                     <div class="col-sm-12 col-md-3">
                         <label for="email" class="">Email</label>
                     </div>
-                    <div class="col-sm-12 col-md-9">
+                    <div class="col-sm-12 col-md-7">
                         <input type="email" id="email" placeholder="email" name="email"/>
                     </div>
                 </div>
@@ -15,12 +15,12 @@
                     <div class="col-sm-12 col-md-3">
                         <label for="password">Password</label>
                     </div>
-                    <div class="col-sm-12 col-md-9">
+                    <div class="col-sm-12 col-md-7">
                         <input type="password" id="password" placeholder="Password" name="password"/>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-12 col-md-9 col-md-offset-3">
+                    <div class="col-sm-12 col-md-7 col-md-offset-3">
                         <button type="submit">Sign In</button>
                     </div>
                 </div>

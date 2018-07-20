@@ -1,7 +1,8 @@
 <template>
     <!-- Header start -->
-    <header>
-        <a href='/' class="logo">Bubblecheck</a>
+    <header class="sticky">
+        <label for="drawer-control" class="drawer-toggle"></label>
+        <router-link :to="'/'" class="logo">Bubblecheck</router-link>
     </header>
     <!-- Header end -->
 </template>
