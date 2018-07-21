@@ -1,11 +1,11 @@
 <template>
-    <div>
-        <span v-if="loading">Loading...</span>
-        <div v-else>
-            Course id {{ $route.params.courseid }}
-            {{ course }}
-        </div>
+  <div>
+    <div class="spinner primary" v-if="loading"></div>
+    <div v-else>
+      <h1>{{ course.name }}</h1>
+      {{ course }}
     </div>
+  </div>
 </template>
 
 <script>

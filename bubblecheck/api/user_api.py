@@ -2,14 +2,18 @@ import json
 import jwt
 
 from flask import Blueprint
+from flask import flash
 from flask import g
 from flask import get_flashed_messages
 from flask import jsonify
+from flask import redirect
 from flask import render_template
 from flask import request
 from flask import Response
 from flask import session
 from flask_login import login_required
+from flask_login import login_user
+from flask_login import logout_user
 from flask_login import current_user
 from http import HTTPStatus
 from bubblecheck import db
@@ -21,6 +25,22 @@ user_api_routes = Blueprint('user_api_routes', __name__)
 @login_required
 def get_current_user():
     return jsonify(current_user.toJSON())
+
+@user_api_routes.route('/login', methods=['POST'])
+def user_login_view():
+    request_data = request.get_json()
+    email = request_data['email']
+    password = request_data['password']
+    u = User.query.filter(User.email==email).one_or_none()
+    if u and u.check_password(password):
+        login_user(u)
+        return 'Success', 200
+    return 'Login Incorrect', 401
+
+@user_api_routes.route('/logout', methods=['GET'])
+def user_logout_view():
+    logout_user()
+    return redirect('/')
 
 @user_api_routes.route('/token/request', methods=['POST'])
 def token_login():

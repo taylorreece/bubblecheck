@@ -40,35 +40,34 @@ class CheckAPI(unittest.TestCase):
         ########################################################
         # Verify bad credentials return a 401, UNAUTHORIZED
         response = self.client.post(
-            '/user/login',
-            data=dict(email=user.email, password='wrong_password'),
-            follow_redirects=False)
-        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+            '/api/user/login',
+            data=json.dumps({'email': user.email, 'password': 'wrong_password'}),
+            content_type='application/json')
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
         ########################################################
         # The user shouldn't be able to access an endpoint protected by @login_required
-        # They should instead be redirected, so get a 302 return code
-        response = self.client.get('/user/testlogin')
+        response = self.client.get('/api/user/current_user')
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
         ########################################################
         # Verify good credentials return a 200
         login_response = self.client.post(
-            '/user/login',
-            data=dict(email=user.email, password='foobar123!'),
-            follow_redirects=False)
-        self.assertNotEqual(login_response.status_code, HTTPStatus.UNAUTHORIZED)
+            '/api/user/login',
+            data=json.dumps({'email': user.email, 'password': 'foobar123!'}),
+            content_type='application/json')
+        self.assertEqual(login_response.status_code, HTTPStatus.OK)
 
         ########################################################
-        # The user should now be able to access /user/testlogin, 
+        # The user should now be able to access /api/user/current_user, 
         # protected by @login_required decorator
-        response = self.client.get('/user/testlogin')
+        response = self.client.get('/api/user/current_user')
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
         ########################################################
-        # Test logout; we should now not be able to access the testlogin endpoint once more
-        self.client.get('/user/logout')
-        response = self.client.get('/user/testlogin')
+        # Test logout; we should now not be able to access the current_user endpoint once more
+        self.client.get('/api/user/logout')
+        response = self.client.get('/api/user/current_user')
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
     
     def test_jwt_login(self):
@@ -94,7 +93,7 @@ class CheckAPI(unittest.TestCase):
         ########################################################
         # Verify we can use that token to check login
         token_check_response = self.client.get(
-                '/user/testlogin',
+                '/api/user/current_user',
                 headers={'Authorization': 'Bearer {}'.format(token)})
         self.assertEqual(token_check_response.status_code, HTTPStatus.OK)
 
@@ -102,7 +101,7 @@ class CheckAPI(unittest.TestCase):
         # Verify we get a 302 if we try to use a bunk JWT
         bad_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IkZha2VFbWFpbEBmb29iYXIuY29tIiwiZXhwIjozMjUyNTc0NzcxMX0.GUbxfg3OWSp4yei5GTzXRNF_KF5xacNSb4mcrcr6LoI'
         bad_token_check_response = self.client.get(
-            '/user/testlogin',
+            '/api/user/current_user',
             headers={'Authorization': 'Bearer {}'.format(bad_token)})
         self.assertEqual(bad_token_check_response.status_code, HTTPStatus.UNAUTHORIZED)
 

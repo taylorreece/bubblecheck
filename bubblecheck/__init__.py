@@ -41,11 +41,14 @@ def load_user_session(user_id):
     return User.query.get(user_id)
 
 # ===============================================================================
-# Map out some generally non-API routes:
-from bubblecheck.views import default_view_routes
-from bubblecheck.views import user_views
-app.register_blueprint(default_view_routes)
-app.register_blueprint(user_views.user_web_routes, url_prefix='/user')
+# Map out some non-API routes:
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    if app.debug:
+        import requests
+        return requests.get('http://localhost:8080/{}'.format(path)).text
+    return render_template("dist/index.html")
 
 # ===============================================================================
 # Define our API endpoints:

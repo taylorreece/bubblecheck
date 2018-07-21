@@ -10,6 +10,7 @@
         <router-view/>
       </div>
     </div>
+    <bubblecheck-footer />
   </div>
 </template>
 
@@ -51,5 +52,14 @@ export default {
 <style>
 .bubblecheck-drawer {
   border: 0px !important;
+}
+.responsive-label {
+    align-items:center
+}
+.responsive-label div input {
+    width: 100%;
+}
+@media (min-width: 768px) {
+    .responsive-label .col-md-3{text-align:right}
 }
 </style>

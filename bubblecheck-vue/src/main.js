@@ -5,11 +5,13 @@ import App from './App'
 import router from './router'
 import Navbar from './components/Navbar.vue'
 import Sidebar from './components/Sidebar.vue'
+import Footer from './components/Footer.vue'
 
 Vue.config.productionTip = false
 
 Vue.component('bubblecheck-navbar', Navbar)
 Vue.component('bubblecheck-sidebar', Sidebar)
+Vue.component('bubblecheck-footer', Footer)
 
 /* eslint-disable no-new */
 new Vue({
