@@ -21,7 +21,7 @@
             <div class="row">
                 <div class="col-sm-12 col-md-7 col-md-offset-3">
                     <div class="spinner primary" v-if="loading"></div>
-                    <button v-else v-on:click="submitLogin">Sign In</button>
+                    <button v-else v-on:click="submitLogin" class="primary">Sign In</button>
                 </div>
             </div>
             <div class="row" v-if="error_text">
@@ -34,12 +34,6 @@
 </template>
 
 <style>
-.responsive-label {
-    align-items:center
-}
-@media (min-width: 768px) {
-    .responsive-label .col-md-3{text-align:right}
-}
 </style>
 
 <script>

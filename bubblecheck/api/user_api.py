@@ -42,6 +42,33 @@ def user_logout_view():
     logout_user()
     return redirect('/')
 
+@user_api_routes.route('/register', methods=['POST'])
+def user_register():
+    request_data = request.get_json()
+    email = request_data['email']
+    password = request_data['password']
+    repeatpassword = request_data['repeatpassword']
+    teachername = request_data['teachername']
+    u = User.query.filter(User.email==email).one_or_none()
+    if u:
+        ret = jsonify(error='A user with that email already exists.')
+        ret.status_code = HTTPStatus.NOT_ACCEPTABLE
+        return ret
+    if password != repeatpassword:
+        ret = jsonify(error='Your passwords do not match')
+        ret.status_code = HTTPStatus.NOT_ACCEPTABLE
+        return ret
+    _user = User(
+        email=email,
+        teachername=teachername
+    )
+    _user.set_password(password)
+    db.session.add(_user)
+    db.session.commit()
+    db.session.refresh(_user)
+    login_user(_user)
+    return 'Success', 200
+
 @user_api_routes.route('/token/request', methods=['POST'])
 def token_login():
     # curl -X POST http://localhost:8080/user/token/request --data '{"email":"8LYEEX4H@IRLUH.com","password":"foobar123!"}' -H "Content-Type: application/json"

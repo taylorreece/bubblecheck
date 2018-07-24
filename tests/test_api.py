@@ -30,6 +30,53 @@ class CheckAPI(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(CheckAPI, self).__init__(*args, **kwargs)
         self.client = app.test_client()
+    
+    def test_user_creation(self):
+        # Create a user
+        user = rand.user()
+        response = self.client.post(
+            '/api/user/register',
+            data=json.dumps({
+                'email': user.email,
+                'teachername': user.teachername,
+                'password': 'foobar123!',
+                'repeatpassword': 'foobar123!'
+            }),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        # Assert you are logged in
+        response = self.client.get('/api/user/current_user')
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.client.get('/api/user/logout')
+
+        # Try to create the same user again
+        response = self.client.post(
+            '/api/user/register',
+            data=json.dumps({
+                'email': user.email,
+                'teachername': user.teachername,
+                'password': 'foobar123!',
+                'repeatpassword': 'foobar123!'
+            }),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
+
+        # Assert that you get a failure if passwords don't match
+        response = self.client.post(
+            '/api/user/register',
+            data=json.dumps({
+                'email': rand.email(),
+                'teachername': 'Mrs. Smith',
+                'password': 'foobar123!',
+                'repeatpassword': 'doesnt match'
+            }),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
+
 
     def test_user_login(self):
         """ Create a user via direct model invocation, then verify login works"""
