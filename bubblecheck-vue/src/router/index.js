@@ -6,6 +6,7 @@ const routerOptions = [
   { path: '/login', component: 'Login' },
   { path: '/register', component: 'Register' },
   { path: '/course/:courseid', component: 'Course', name: 'course' },
+  { path: '/techstack', component: 'TechStack' },
   { path: '*', component: 'NotFound' }
 ]
 
