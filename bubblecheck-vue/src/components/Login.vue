@@ -4,7 +4,7 @@
             <legend class="doc">Log In</legend>
             <div class="row responsive-label">
                 <div class="col-sm-12 col-md-3">
-                    <label for="email" class="">Email</label>
+                    <label for="email">Email</label>
                 </div>
                 <div class="col-sm-12 col-md-7">
                     <input type="email" placeholder="Email" v-model="email"/>
