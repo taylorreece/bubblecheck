@@ -2,7 +2,7 @@
     <!-- Header start -->
     <header class="sticky">
         <label for="drawer-control" class="drawer-toggle"></label>
-        <router-link :to="'/'" class="logo">Bubblecheck</router-link>
+        <router-link to="/" class="logo">Bubblecheck</router-link>
     </header>
     <!-- Header end -->
 </template>

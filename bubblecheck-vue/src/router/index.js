@@ -5,8 +5,10 @@ const routerOptions = [
   { path: '/about', component: 'About' },
   { path: '/login', component: 'Login' },
   { path: '/register', component: 'Register' },
-  { path: '/course/:courseid', component: 'Course', name: 'course' },
+  { path: '/course/view/:courseid', component: 'Course', name: 'course' },
   { path: '/techstack', component: 'TechStack' },
+  { path: '/dashboard', component: 'Dashboard' },
+  { path: '/course/add', component: 'CourseAdd' },
   { path: '*', component: 'NotFound' }
 ]
 

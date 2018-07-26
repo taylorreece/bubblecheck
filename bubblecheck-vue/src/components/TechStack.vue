@@ -54,7 +54,7 @@ export default {
         {
           'name': 'SQLAlchemy',
           'purpose': 'Database ORM',
-          'website': 'http://www.sqlalchemy.org/'
+          'website': 'https://www.sqlalchemy.org/'
         },
         {
           'name': 'Vue JS',
