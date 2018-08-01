@@ -7,7 +7,7 @@
         <bubblecheck-sidebar v-bind:user="user" v-bind:courses="courses" />
       </div>
       <div class="col-md-9 col-lg-9 col-sm-12">
-        <router-view/>
+        <router-view v-bind:user="user" v-bind:courses="courses" />
       </div>
     </div>
     <bubblecheck-footer />
