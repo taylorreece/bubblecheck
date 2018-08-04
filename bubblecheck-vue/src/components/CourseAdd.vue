@@ -32,7 +32,7 @@
             <div class="row">
                 <div class="col-sm-12 col-md-7 col-md-offset-3">
                     <div class="spinner primary" v-if="loading"></div>
-                    <button v-else class="primary">Add Course</button>
+                    <button v-else v-on:click="submitCourseAdd" class="primary">Add Course</button>
                 </div>
             </div>
             <div class="row" v-if="error_text">
@@ -46,7 +46,8 @@
 </template>
 
 <script>
-// import axios from 'axios'
+import axios from 'axios'
+
 export default {
   data () {
     return {
@@ -60,7 +61,24 @@ export default {
   },
   methods: {
     submitCourseAdd: function () {
-      console.log(this.name)
+      if (this.loading) {
+        console.log('Already submitting.')
+        return
+      }
+      this.loading = true
+      var submitData = {
+        'name': this.name,
+        'sections': this.sections.slice(0, this.numSections)
+      }
+      axios.post('/api/course/add', submitData)
+        .then(response => {
+          location.reload()
+        })
+        .catch(error => {
+          console.log(error)
+          this.error_text = error.response.data
+          this.loading = false
+        })
     }
   }
 }
