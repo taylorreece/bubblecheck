@@ -24,7 +24,7 @@ user_api_routes = Blueprint('user_api_routes', __name__)
 @user_api_routes.route('/current_user', methods=['GET'])
 @login_required
 def get_current_user():
-    return jsonify(current_user.toJSON())
+    return jsonify(user=current_user.toJSON(), success=True)
 
 @user_api_routes.route('/login', methods=['POST'])
 def user_login_view():
@@ -34,13 +34,15 @@ def user_login_view():
     u = User.query.filter(User.email==email).one_or_none()
     if u and u.check_password(password):
         login_user(u)
-        return 'Success', 200
-    return 'Login Incorrect', 401
+        return jsonify(user=u.toJSON(), success=True)
+    resp = jsonify(error='Login Incorrect', success=False)
+    resp.status_code = HTTPStatus.UNAUTHORIZED
+    return resp
 
 @user_api_routes.route('/logout', methods=['GET'])
 def user_logout_view():
     logout_user()
-    return redirect('/')
+    return jsonify(success=True)
 
 @user_api_routes.route('/register', methods=['POST'])
 def user_register():
@@ -51,11 +53,11 @@ def user_register():
     teachername = request_data['teachername']
     u = User.query.filter(User.email==email).one_or_none()
     if u:
-        ret = jsonify(error='A user with that email already exists.')
+        ret = jsonify(error='A user with that email already exists.', success=False)
         ret.status_code = HTTPStatus.NOT_ACCEPTABLE
         return ret
     if password != repeatpassword:
-        ret = jsonify(error='Your passwords do not match')
+        ret = jsonify(error='Your passwords do not match', success=False)
         ret.status_code = HTTPStatus.NOT_ACCEPTABLE
         return ret
     _user = User(
@@ -67,7 +69,7 @@ def user_register():
     db.session.commit()
     db.session.refresh(_user)
     login_user(_user)
-    return 'Success', 200
+    return jsonify(user=_user.toJSON(), success=True)
 
 @user_api_routes.route('/token/request', methods=['POST'])
 def token_login():
@@ -78,9 +80,9 @@ def token_login():
     u = User.query.filter(User.email==email).one_or_none()
     if u and u.check_password(password):
         password = u.password
-        return jsonify(jwt_token=u.create_jwt())
+        return jsonify(jwt_token=u.create_jwt(), success=True)
     else:
-        resp = jsonify(error='No such user found')
+        resp = jsonify(error='No such user found', success=False)
         resp.status_code = HTTPStatus.NOT_FOUND
         return resp
 
@@ -90,15 +92,17 @@ def token_check():
     token = request.headers.get('Authorization').replace('Bearer ', '')
     u = User.get_user_by_jwt(token)
     if u:
-        return jsonify(expires=jwt.decode(token, verify=False)['exp'])
+        return jsonify(expires=jwt.decode(token, verify=False)['exp'], success=True)
     else:
-        return Response("Invalid", 401)
+        resp = jsonify(error="Invalid JWT token", success=False)
+        resp.status_code = HTTPStatus.UNAUTHORIZED
+        return resp
 
 @user_api_routes.route('/token/renew', methods=['GET'])
 @login_required
 def token_renew():
     # curl -X GET 'http://localhost:8080/user/token/renew' -H "Authorization: Bearer {{TOKEN}}"
-    return jsonify(jwt_token=current_user.create_jwt())
+    return jsonify(jwt_token=current_user.create_jwt(), success=True)
 
 @user_api_routes.route('/flash_messages', methods=['GET'])
 def get_flash_messages():
@@ -106,4 +110,4 @@ def get_flash_messages():
             'message': message,
             'category': category
         } for category, message in get_flashed_messages(with_categories=True)]
-    return jsonify(messages=messages)
+    return jsonify(messages=messages, success=True)

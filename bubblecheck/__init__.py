@@ -1,5 +1,5 @@
 import os
-from flask import Flask, g, request, session
+from flask import Flask, g, request, session, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import current_user
@@ -41,7 +41,7 @@ def load_user_session(user_id):
     return User.query.get(user_id)
 
 # ===============================================================================
-# Map out some non-API routes:
+# Map out some non-API routes (just for static front-end stuff)
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def catch_all(path):
@@ -49,6 +49,14 @@ def catch_all(path):
         import requests
         return requests.get('http://localhost:8080/{}'.format(path)).text
     return render_template("dist/index.html")
+
+# ===============================================================================
+# Handle 500 errors gracefully
+@app.errorhandler(500)
+def internal_server_error(e):
+    resp = jsonify(error="An unknown error occurred", success=False)
+    resp.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
+    return resp
 
 # ===============================================================================
 # Define our API endpoints:

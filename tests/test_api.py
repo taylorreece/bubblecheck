@@ -218,7 +218,7 @@ class CheckAPI(unittest.TestCase):
         )
 
         self.assertEqual(course_add_response.status_code, HTTPStatus.OK)
-        course_add_response_json = json.loads(course_add_response.data.decode())
+        course_add_response_json = json.loads(course_add_response.data.decode())['course']
         new_course_id = course_add_response_json['id']
         self.assertEqual(len(course_add_response_json['sections']), 4)
         self.assertEqual(course_add_response_json['sections'][1]['name'], 'Hour 6')
@@ -248,7 +248,7 @@ class CheckAPI(unittest.TestCase):
             '/api/course/{course_id}'.format(course_id=new_course_id),
             headers={'Authorization': 'Bearer {}'.format(jwt_token)}
         )
-        get_updated_course_response_json = json.loads(get_updated_course_response.data.decode())
+        get_updated_course_response_json = json.loads(get_updated_course_response.data.decode())['course']
         self.assertEqual(get_updated_course_response.status_code, 200)
         self.assertEqual(get_updated_course_response_json['name'], 'Early World History')
         self.assertEqual(len(get_updated_course_response_json['sections']), 4)
@@ -263,13 +263,13 @@ class CheckAPI(unittest.TestCase):
             data=json.dumps(new_section_json)
         )
         self.assertEqual(add_new_section_response.status_code, HTTPStatus.OK)
-        new_section_id = json.loads(add_new_section_response.data.decode())['id']
+        new_section_id = json.loads(add_new_section_response.data.decode())['section']['id']
 
         get_updated_course_response = self.client.get(
             '/api/course/{course_id}'.format(course_id=new_course_id),
             headers={'Authorization': 'Bearer {}'.format(jwt_token)}
         )
-        get_updated_course_response_json = json.loads(get_updated_course_response.data.decode())
+        get_updated_course_response_json = json.loads(get_updated_course_response.data.decode())['course']
         self.assertEqual(len(get_updated_course_response_json['sections']), 5)
         self.assertIn('New Section foo', [section['name'] for section in get_updated_course_response_json['sections']])
 
@@ -283,12 +283,12 @@ class CheckAPI(unittest.TestCase):
             data=json.dumps(update_section_json)
         )
         self.assertEqual(add_new_section_response.status_code, HTTPStatus.OK)
-        self.assertEqual(json.loads(update_section_response.data.decode())['id'], new_section_id)
+        self.assertEqual(json.loads(update_section_response.data.decode())['section']['id'], new_section_id)
         get_updated_course_response = self.client.get(
             '/api/course/{course_id}'.format(course_id=new_course_id),
             headers={'Authorization': 'Bearer {}'.format(jwt_token)}
         )
-        get_updated_course_response_json = json.loads(get_updated_course_response.data.decode())
+        get_updated_course_response_json = json.loads(get_updated_course_response.data.decode())['course']
         self.assertIn('Updated section name', [section['name'] for section in get_updated_course_response_json['sections']])
 
         ########################################################
@@ -302,7 +302,7 @@ class CheckAPI(unittest.TestCase):
             '/api/course/{course_id}'.format(course_id=new_course_id),
             headers={'Authorization': 'Bearer {}'.format(jwt_token)}
         )
-        get_updated_course_response_json = json.loads(get_updated_course_response.data.decode())
+        get_updated_course_response_json = json.loads(get_updated_course_response.data.decode())['course']
         self.assertEqual(len(get_updated_course_response_json['sections']), 4)
         self.assertNotIn('Updated section name', [section['name'] for section in get_updated_course_response_json['sections']])
 

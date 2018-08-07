@@ -22,7 +22,7 @@ parso==0.3.1
 pexpect==4.6.0
 pickleshare==0.7.4
 pip-review==1.0
-prompt-toolkit==2.0.3
+prompt-toolkit==2.0.4
 ptyprocess==0.6.0
 Pygments==2.2.0
 PyJWT==1.6.4

@@ -23,10 +23,13 @@
 **Sample Output**:
 ```json
 {
-	"email": "foo@bar.com", 
-	"id": 123, 
-	"public_uuid": "0dc9e8f5-3b1e-4a5e-97ad-1280512ef8e4", 
-	"teachername": "Mr. Smith"
+	"user": {
+    "email": "foo@bar.com", 
+    "id": 123, 
+    "public_uuid": "0dc9e8f5-3b1e-4a5e-97ad-1280512ef8e4", 
+    "teachername": "Mr. Smith"
+  },
+  "success": true
 }
 ```
 ----
@@ -44,7 +47,8 @@
       "category": "error",
       "message": "Login Incorrect"
     }
-  ]
+  ],
+  "success": true
 }
 ```
 ----
@@ -62,7 +66,8 @@
 **Sample Output**:
 ```json
 {
-	"jwt_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IkZha2VFbWFpbEBmb29iYXIuY29tIiwiZXhwIjozMjUyNTc0NzcxMX0.GUbxfg3OWSp4yei5GTzXRNF_KF5xacNSb4mcrcr6LoI"
+  "jwt_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IkZha2VFbWFpbEBmb29iYXIuY29tIiwiZXhwIjozMjUyNTc0NzcxMX0.GUbxfg3OWSp4yei5GTzXRNF_KF5xacNSb4mcrcr6LoI",
+  "success": true
 }
 ```
 ----
@@ -75,7 +80,8 @@
 **Sample Output**:
 ```json
 {
-	"expires": "2018-04-24 12:32:19"
+  "expires": "2018-04-24 12:32:19",
+  "success": true
 }
 ```
 ----
@@ -88,7 +94,8 @@
 **Sample Output**:
 ```json
 {
-	"jwt_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IkZha2VFbWFpbEBmb29iYXIuY29tIiwiZXhwIjozMjUyNTc0NzcxMX0.GUbxfg3OWSp4yei5GTzXRNF_KF5xacNSb4mcrcr6LoI"
+  "jwt_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IkZha2VFbWFpbEBmb29iYXIuY29tIiwiZXhwIjozMjUyNTc0NzcxMX0.GUbxfg3OWSp4yei5GTzXRNF_KF5xacNSb4mcrcr6LoI",
+  "success": true
 }
 ```
 ----
@@ -113,7 +120,8 @@
       "name": "Algebra", 
       "permission": "edit"
     }
-  ]
+  ],
+  "success": true
 }
 ```
 ----
@@ -126,40 +134,43 @@
 **Sample Output**:
 ```json
 {
-  "exams": [
+  "course": {
+    "exams": [
+        {
+            "id": 12,
+            "name": "Final Exam"
+        }
+    ], 
+    "id": 1, 
+    "name": "Geometry", 
+    "other_users": [
       {
-          "id": 12,
-          "name": "Final Exam"
+        "permission": "edit", 
+        "public_uuid": "1fd653b5-ea1d-4cde-84ab-37ce6e488e38", 
+        "teachername": "Mrs. Sillypants"
       }
-  ], 
-  "id": 1, 
-  "name": "Geometry", 
-  "other_users": [
-    {
-      "permission": "edit", 
-      "public_uuid": "1fd653b5-ea1d-4cde-84ab-37ce6e488e38", 
-      "teachername": "Mrs. Sillypants"
-    }
-  ], 
-  "permission": "own", 
-  "sections": [
-    {
-      "id": 1, 
-      "name": "Hour 1"
-    }, 
-    {
-      "id": 2, 
-      "name": "Hour 2"
-    }, 
-    {
-      "id": 3, 
-      "name": "Hour 3"
-    }, 
-    {
-      "id": 4, 
-      "name": "Hour 4"
-    }
-  ]
+    ], 
+    "permission": "own", 
+    "sections": [
+      {
+        "id": 1, 
+        "name": "Hour 1"
+      }, 
+      {
+        "id": 2, 
+        "name": "Hour 2"
+      }, 
+      {
+        "id": 3, 
+        "name": "Hour 3"
+      }, 
+      {
+        "id": 4, 
+        "name": "Hour 4"
+      }
+    ],
+  },
+  "success": true
 }
 ```
 ----
@@ -176,26 +187,30 @@
     "sections": [
         "Hour 3",
         "Hour 5"
-    ]
+    ],
+    "success": true
 }
 ```
 
 **Sample Output**:
 ```json
 {
-  "id": 123, 
-  "name": "US History",
-  "permission": "own", 
-  "sections": [
-    {
-      "id": 1, 
-      "name": "Hour 3"
-    }, 
-    {
-      "id": 2, 
-      "name": "Hour 5"
-    }
-  ]
+  "course": {
+    "id": 123, 
+    "name": "US History",
+    "permission": "own", 
+    "sections": [
+      {
+        "id": 1, 
+        "name": "Hour 3"
+      }, 
+      {
+        "id": 2, 
+        "name": "Hour 5"
+      }
+    ],
+  },
+  "success": true
 }
 ```
 ----
@@ -215,19 +230,22 @@
 **Sample Output**:
 ```json
 {
-  "id": 123, 
-  "name": "Early US History",
-  "permission": "own", 
-  "sections": [
-    {
-      "id": 1, 
-      "name": "Hour 3"
-    }, 
-    {
-      "id": 2, 
-      "name": "Hour 5"
-    }
-  ]
+  "course": {
+    "id": 123, 
+    "name": "Early US History",
+    "permission": "own", 
+    "sections": [
+      {
+        "id": 1, 
+        "name": "Hour 3"
+      }, 
+      {
+        "id": 2, 
+        "name": "Hour 5"
+      }
+    ],
+  },
+  "success": true
 }
 ```
 ----
@@ -247,8 +265,11 @@
 **Sample Output**:
 ```json
 {
-  "id": 456,
-  "name": "Hour 6"
+  "section": {
+    "id": 456,
+    "name": "Hour 6"
+  },
+  "success": true
 }
 ```
 ----
@@ -261,15 +282,18 @@
 **Sample Input**:
 ```json
 {
-  "name": "Hour 6a"
+  "name": "Hour 6a",
 }
 ```
 
 **Sample Output**:
 ```json
 {
-  "id": 456,
-  "name": "Hour 6a"
+  "section": {
+    "id": 456,
+    "name": "Hour 6a"
+  },
+  "success": true
 }
 ```
 ----
