@@ -26,7 +26,14 @@ def exit_with_error(msg, code=1, exception=None):
 
 # ==============================================================================
 def create_pdf(args):
-    bubblecheckpdf.create_pdf(format=args.format)
+    bubblecheckpdf.create_pdf(
+        exam_format=args.exam_format,
+        output_file=args.output_file,
+        exam_id=123,
+        exam_name='Final Exam', 
+        teacher_name='Mr. Smith', 
+        show_points_possible=True
+    )
 
 # =========================================================================================
 def help(args):
@@ -56,7 +63,7 @@ def parse_args():
     # Create PDF
     # -----------------------
     create_pdf_parser = add_standard_subparser('create', help='Create a single-page PDF exam', add_help=False)
-    create_pdf_parser.add_argument('--format', help='Format of the exam', required=True)
+    create_pdf_parser.add_argument('exam_format', help='Format of the exam')
     create_pdf_parser.add_argument('--output-file', help='File to write out to', required=True)
     create_pdf_parser.set_defaults(func=create_pdf)
 
@@ -68,14 +75,11 @@ def parse_args():
 
 # =========================================================================================
 def main():
-    try:
-        args = parse_args()
-        if args.subparser_name:
-            args.func(args)
-        else:
-            print_help()
-    except Exception as e:
-        exit_with_error('An unhandled exception occurred. That makes me sad.', exception=e)
+    args = parse_args()
+    if args.subparser_name:
+        args.func(args)
+    else:
+        print_help()
 
 # =========================================================================================
 if __name__ == '__main__':
