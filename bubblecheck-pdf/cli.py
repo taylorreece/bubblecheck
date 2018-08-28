@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import bubblecheckpdf
+import pdf2image
 import sys
 import traceback
 
@@ -32,8 +33,13 @@ def create_pdf(args):
         exam_id=123,
         exam_name='Final Exam', 
         teacher_name='Mr. Smith', 
-        show_points_possible=True
+        show_points_possible=True,
+        answers=args.answers
     )
+
+# =========================================================================================
+def convert_pdf(args):
+    bubblecheckpdf.convert_pdf(input_file=args.input_file, output_directory=args.output_directory, dpi=args.dpi)
 
 # =========================================================================================
 def help(args):
@@ -64,8 +70,19 @@ def parse_args():
     # -----------------------
     create_pdf_parser = add_standard_subparser('create', help='Create a single-page PDF exam', add_help=False)
     create_pdf_parser.add_argument('exam_format', help='Format of the exam')
+    create_pdf_parser.add_argument('--answers', help='Answers for the exam')
     create_pdf_parser.add_argument('--output-file', help='File to write out to', required=True)
     create_pdf_parser.set_defaults(func=create_pdf)
+
+    # -----------------------
+    # Convert PDF -> PNG
+    # -----------------------
+    convert_pdf_parser = add_standard_subparser('convert', help='Convert .pdf to .png files', add_help=False)
+    convert_pdf_parser.add_argument('input_file', help='PDF file to convert')
+    convert_pdf_parser.add_argument('output_directory', help='Directory to which we will write files')
+    convert_pdf_parser.add_argument('--dpi', help='Resolution of the conversion', default=200)
+    convert_pdf_parser.set_defaults(func=convert_pdf)
+
 
     help_parser = subparsers.add_parser('help', help='Command-specific help', add_help=False)
     help_parser.add_argument('help_for', action='store', nargs='*')

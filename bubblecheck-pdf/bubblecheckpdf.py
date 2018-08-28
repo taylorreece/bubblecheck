@@ -8,11 +8,13 @@ from reportlab.graphics.barcode.qr import QrCodeWidget
 from reportlab.graphics.shapes import Drawing
 from reportlab.graphics import renderPDF
 
-def create_pdf(exam_format, output_file, exam_id=0, exam_name='', teacher_name='', show_points_possible=False):
+def create_pdf(exam_format, output_file, exam_id=0, exam_name='', teacher_name='', show_points_possible=False, answers=None):
     # Sanity check the data sent
     assert(len(exam_format) <= 90)
     for character in exam_format:
         assert(character in '.ABCDEFGH')
+    if answers:
+        assert(len(answers) == len(exam_format))
 
     OFFSETS = {
         'questions_y_top': 150,
@@ -89,11 +91,19 @@ def create_pdf(exam_format, output_file, exam_id=0, exam_name='', teacher_name='
                 text=character_to_draw
             )
             exam_pdf.setFillColor(colors.black)
-            exam_pdf.circle(
-                x_cen = current_column*OFFSETS['column_width']+94+current_character_index*15,
-                y_cen = page_height-OFFSETS['questions_y_top']+4-(current_row*20),
-                r=7
-            )
+            if answers and answers[current_question_number-1] == character_to_draw:
+                exam_pdf.circle(
+                    x_cen = current_column*OFFSETS['column_width']+94+current_character_index*15,
+                    y_cen = page_height-OFFSETS['questions_y_top']+4-(current_row*20),
+                    r=7,
+                    fill=1
+                )
+            else:
+                exam_pdf.circle(
+                    x_cen = current_column*OFFSETS['column_width']+94+current_character_index*15,
+                    y_cen = page_height-OFFSETS['questions_y_top']+4-(current_row*20),
+                    r=7
+                )
             current_character_index += 1
 
         current_row += 1
@@ -104,3 +114,12 @@ def create_pdf(exam_format, output_file, exam_id=0, exam_name='', teacher_name='
 
     exam_pdf.showPage()    
     exam_pdf.save()
+
+def convert_pdf(input_file, output_directory, dpi=200):
+    pages = pdf2image.convert_from_path(input_file, dpi=dpi)
+    page_number = 0
+    os.mkdir(output_directory)
+    for page in pages:
+        output_file = os.path.join(output_directory, str(page_number) + '.png')
+        page.save(output_file, 'PNG')
+        page_number += 1
