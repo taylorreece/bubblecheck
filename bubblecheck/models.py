@@ -171,6 +171,7 @@ class Exam(Base):
     __tablename__ = 'exams'
     name = db.Column(db.Text(), nullable=False)
     courses_id = db.Column(db.Text(), db.ForeignKey('courses.id'))
+    exam_format = db.Column(db.Text())
 
     def __repr__(self):
         return '<Exam %r, (id=%r)>' % (self.name, self.id)
@@ -178,5 +179,6 @@ class Exam(Base):
     def toJSON(self):
         return {
             'name':        self.name,
-            'id':          self.id
+            'id':          self.id,
+            'exam_format':       self.exam_format
         }

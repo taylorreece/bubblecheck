@@ -5,7 +5,7 @@ import string
 import sys
 import unittest
 sys.path.append('..')
-from bubblecheck.models import User, Course, Section
+from bubblecheck.models import User, Course, Section, Exam
 from bubblecheck import app
 from bubblecheck import db
 from http import HTTPStatus
@@ -321,13 +321,99 @@ class CheckAPI(unittest.TestCase):
         self.assertEqual(len(course_list_data['courses']), 1)
         self.assertNotIn('Early World History', [course['name'] for course in course_list_data['courses']])
 
+    def test_exam_endpoints(self):
+        user = rand.user()
+        user.set_password('foobar123!')
+        course = Course(name='World Lit')
+        section1 = Section(name='Hour 1')
+        section2 = Section(name='Hour 2')
+        course.sections = [section1, section2]
+        exam1 = Exam(name='Exam 1', exam_format='DDD..EEDD')
+        exam2 = Exam(name='Exam 2', exam_format='..FFFFFFFFFFFF')
+        course.exams = [exam1, exam2]
+        user.courses.append(course)
+        db.session.add(course)
+        db.session.add_all([user, section1, section2, exam1, exam2])
+        db.session.commit()
+        db.session.refresh(course)
+        db.session.refresh(exam1)
+
+        token_request_json = {
+            'email': user.email,
+            'password': 'foobar123!'
+        }
+
+        ########################################################
+        # Verify we can get a JWT token
+        token_request_response = self.client.post(
+            '/api/user/token/request',
+            data=json.dumps(token_request_json),
+            content_type='application/json'
+        )
+        jwt_token = json.loads(token_request_response.data.decode())['jwt_token']
+
+        ##############################################
+        # Verify that we have two exams in this course
+        exams_list_response = self.client.get(
+            '/api/course/{course_id}/exams'.format(course_id=course.id),
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)}
+        )
+        self.assertEqual(exams_list_response.status_code, HTTPStatus.OK)
+        exam_list_data = json.loads(exams_list_response.data.decode())
+        self.assertEqual(len(exam_list_data['exams']), 2)
+
+        ###############################################
+        # Verify that a specific exam has the correct name and format
+        self.assertIn('Exam 1', [exam['name'] for exam in exam_list_data['exams']])
+        self.assertNotIn('Exam Foo', [exam['name'] for exam in exam_list_data['exams']])
+        self.assertIn('DDD..EEDD', [exam['exam_format'] for exam in exam_list_data['exams']])
+        
+        ###############################################
+        # Add an Exam
+        new_exam = Exam(name='Exam 3', exam_format='DDDDD')
+        new_exam_request_response = self.client.post(
+            '/api/course/{course_id}/exam/add'.format(course_id=course.id),
+            data=json.dumps(new_exam.toJSON()),
+            content_type='application/json',
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)}
+        )
+        self.assertEqual(new_exam_request_response.status_code, HTTPStatus.OK)
+        exams_list_response = self.client.get(
+            '/api/course/{course_id}/exams'.format(course_id=course.id),
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)}
+        )
+        exam_list_data = json.loads(exams_list_response.data.decode())
+        # we now have 3 exams
+        self.assertEqual(len(exam_list_data['exams']), 3)
+        new_exam_id = json.loads(new_exam_request_response.data.decode())['exam']['id']
+
+        ###############################################
+        # Edit an exam
+        update_exam_response = self.client.post(
+            '/api/course/{course_id}/exam/{exam_id}/update'.format(course_id=course.id, exam_id=new_exam_id),
+            data=json.dumps({'name': 'Exam 4', 'exam_format': 'CCC'}),
+            content_type='application/json',
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)}
+        )
+        self.assertEqual(update_exam_response.status_code, HTTPStatus.OK)
+        update_exam_response_data = json.loads(update_exam_response.data.decode())
+        self.assertEqual('CCC', update_exam_response_data['exam']['exam_format'])
+        self.assertEqual('Exam 4', update_exam_response_data['exam']['name'])
+
+        ###############################################
+        # Delete an Exam
+        delete_exam_response = self.client.delete(
+            '/api/course/{course_id}/exam/{exam_id}'.format(course_id=course.id, exam_id=new_exam_id),
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)}
+        )
+        exams_list_response = self.client.get(
+            '/api/course/{course_id}/exams'.format(course_id=course.id),
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)}
+        )
+        exam_list_data = json.loads(exams_list_response.data.decode())
+        # we should be back to two exams
+        self.assertEqual(len(exam_list_data['exams']), 2)
+
+
 if __name__ == '__main__':
     unittest.main()
-
-# Create an exam via API
-
-# Edit an exam via API
-
-# Post student exam results via API
-
-# Delete an exam via API
