@@ -21,6 +21,7 @@ from bubblecheck.models import User
 from bubblecheck.models import Course
 from bubblecheck.models import Exam
 from bubblecheck.models import Section
+from bubblecheck.models import StudentExam
 
 # ===============================================================================
 # Configure out login manager
@@ -61,8 +62,6 @@ def internal_server_error(e):
 # ===============================================================================
 # Define our API endpoints:
 from bubblecheck.api import course_api
-from bubblecheck.api import exam_api
 from bubblecheck.api import user_api
 app.register_blueprint(course_api.course_api_routes, url_prefix='/api/course')
-app.register_blueprint(exam_api.exam_api_routes, url_prefix='/api/exam')
 app.register_blueprint(user_api.user_api_routes, url_prefix='/api/user')

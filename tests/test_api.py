@@ -5,7 +5,7 @@ import string
 import sys
 import unittest
 sys.path.append('..')
-from bubblecheck.models import User, Course, Section, Exam
+from bubblecheck.models import User, Course, Section, Exam, StudentExam
 from bubblecheck import app
 from bubblecheck import db
 from http import HTTPStatus
@@ -413,6 +413,53 @@ class CheckAPI(unittest.TestCase):
         exam_list_data = json.loads(exams_list_response.data.decode())
         # we should be back to two exams
         self.assertEqual(len(exam_list_data['exams']), 2)
+
+        ###############################################
+        ###############################################
+        # Create three student exams
+        for answers in ['DDDTTEEDD', 'ABCTFDEAC', 'DCBFFEAAA']:
+            create_student_exam_response = self.client.post(
+                '/api/course/{course_id}/exam/{exam_id}/student_exam'.format(course_id=course.id, exam_id=exam1.id),
+                data=json.dumps({'answers': answers}),
+                content_type='application/json',
+                headers={'Authorization': 'Bearer {}'.format(jwt_token)})
+        exam1 = Exam.query.get(exam1.id) # 'db.session.refresh' doesn't work here, as we're on to a different db session
+        self.assertEqual(len(exam1.student_exams), 3)
+        exam_response = self.client.get(
+            '/api/course/{course_id}/exam/{exam_id}'.format(course_id=course.id, exam_id=exam1.id),
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)})
+        exam_response_data = json.loads(exam_response.data.decode())
+        self.assertEqual(len(exam_response_data['exam']['student_exams']), 3)
+
+        ###############################################
+        # Update one of those student exams
+        student_exam_id = exam_response_data['exam']['student_exams'][0]['id']
+        self.client.post(
+            '/api/course/{course_id}/exam/{exam_id}/student_exam/{student_exam_id}'.format(
+                course_id = course.id,
+                exam_id = exam1.id,
+                student_exam_id = student_exam_id
+            ),
+            data=json.dumps({'answers': 'AAAFFAAAA'}),
+            content_type='application/json',
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)})
+        student_exam = StudentExam.query.get(student_exam_id)
+        self.assertEqual(student_exam.answers, 'AAAFFAAAA')
+
+        ###############################################
+        # Delete a student exam
+        delete_student_exam_response = self.client.delete(
+            '/api/course/{course_id}/exam/{exam_id}/student_exam/{student_exam_id}'.format(
+                course_id = course.id,
+                exam_id = exam1.id,
+                student_exam_id = student_exam_id
+            ),
+            content_type='application/json',
+            headers={'Authorization': 'Bearer {}'.format(jwt_token)})
+        print(delete_student_exam_response.data.decode())
+        exam1 = Exam.query.get(exam1.id)
+        self.assertEqual(len(exam1.student_exams), 2)
+        
 
 
 if __name__ == '__main__':

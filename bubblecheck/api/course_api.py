@@ -14,6 +14,7 @@ from bubblecheck.models import Course
 from bubblecheck.models import CoursePermissionEnum
 from bubblecheck.models import Exam
 from bubblecheck.models import Section
+from bubblecheck.models import StudentExam
 from bubblecheck.models import UserCoursePermission
 from bubblecheck import db
 
@@ -152,7 +153,7 @@ def list_exams(course_id):
 @course_permission_required('view')
 def get_exam(course_id, exam_id):
     exam = Exam.query.get(exam_id)
-    return jsonify(exam=exam.toJSON(), success=True)
+    return jsonify(exam=exam.toJSON(show_student_exams=True), success=True)
 
 @course_api_routes.route('/<course_id>/exam/add', methods=['POST'])
 @login_required
@@ -202,5 +203,54 @@ def delete_exam(course_id, exam_id):
         return jsonify(message="Successfully deleted exam.", success=True)
     else:
         resp = jsonify(error='No such courseid/examid combination found.', success=False)
+        resp.status_code = HTTPStatus.BAD_REQUEST
+        return resp
+
+###############################################################################
+# Student Exam Endpoints
+@course_api_routes.route('/<course_id>/exam/<exam_id>/student_exam', methods=['POST'])
+@login_required
+@course_permission_required('edit')
+def add_student_exam(course_id, exam_id):
+    request_data = request.get_json()
+    new_student_exam = StudentExam(answers = request_data.get('answers'))
+    exam = Exam.query.get(exam_id)
+    if exam and exam.courses_id == course_id:
+        exam.student_exams.append(new_student_exam)
+        db.session.add(exam)
+        db.session.commit()
+        db.session.refresh(new_student_exam)
+        return jsonify(student_exam=new_student_exam.toJSON(), success=True)
+
+@course_api_routes.route('/<course_id>/exam/<exam_id>/student_exam/<student_exam_id>', methods=['POST'])
+@login_required
+@course_permission_required('edit')
+def update_student_exam(course_id, exam_id, student_exam_id):
+    request_data = request.get_json()
+    student_exam = StudentExam.query.get(student_exam_id)
+    if student_exam and student_exam.exams_id == exam_id:
+        if 'answers' in request_data:
+            student_exam.answers = request_data['answers']
+        db.session.add(student_exam)
+        db.session.commit()
+        db.session.refresh(student_exam)
+        return jsonify(exam=student_exam.toJSON(), success=True)
+    else:
+        resp = jsonify(error='No such courseid/examid combination found')
+        resp.status_code = HTTPStatus.BAD_REQUEST
+        return resp
+
+@course_api_routes.route('/<course_id>/exam/<exam_id>/student_exam/<student_exam_id>', methods=['DELETE'])
+@login_required
+@course_permission_required('edit')
+def delete_student_exam(course_id, exam_id, student_exam_id):
+    student_exam = StudentExam.query.get(student_exam_id)
+    if student_exam and student_exam.exams_id == exam_id:
+        student_exam.active = False
+        db.session.add(student_exam)
+        db.session.commit()
+        return jsonify(message="Successfully deleted student_exam.", success=True)
+    else:
+        resp = jsonify(error='No such courseid/examid/student_exam combination found.', success=False)
         resp.status_code = HTTPStatus.BAD_REQUEST
         return resp

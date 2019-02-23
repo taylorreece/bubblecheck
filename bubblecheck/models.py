@@ -172,13 +172,34 @@ class Exam(Base):
     name = db.Column(db.Text(), nullable=False)
     courses_id = db.Column(db.Text(), db.ForeignKey('courses.id'))
     exam_format = db.Column(db.Text())
+    student_exams = relationship('StudentExam', primaryjoin="and_(Exam.id==StudentExam.exams_id, StudentExam.active)")
 
     def __repr__(self):
         return '<Exam %r, (id=%r)>' % (self.name, self.id)
 
-    def toJSON(self):
-        return {
+    def toJSON(self, show_student_exams=False):
+        exam_json = {
             'name':        self.name,
             'id':          self.id,
             'exam_format':       self.exam_format
+        }
+
+        if show_student_exams:
+            exam_json['student_exams'] = [student_exam.toJSON() for student_exam in self.student_exams]
+
+        return exam_json
+
+# ==============================================================================
+class StudentExam(Base):
+    __tablename__ = 'studentexams'
+    exams_id = db.Column(db.Text(), db.ForeignKey('exams.id'))
+    answers = db.Column(db.Text())
+
+    def __repr__(self):
+        return '<StudentExam (id=%r)>' % self.id
+    
+    def toJSON(self):
+        return {
+            'id': self.id,
+            'answers': self.answers
         }
