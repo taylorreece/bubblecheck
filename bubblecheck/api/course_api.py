@@ -39,7 +39,7 @@ def course_permission_required(permission):
         return decorated_function
     return decorator
 
-@course_api_routes.route('/list', methods=['GET'])
+@course_api_routes.route('/', methods=['GET'])
 @login_required
 def list_courses():
     return jsonify(courses=[course.toJSON() for course in current_user.courses], success=True)

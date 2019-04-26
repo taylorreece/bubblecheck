@@ -189,7 +189,7 @@ class CheckAPI(unittest.TestCase):
         ########################################################
         # Verify that we have a single course for this user
         course_list_response = self.client.get(
-            '/api/course/list',
+            '/api/course/',
             headers={'Authorization': 'Bearer {}'.format(jwt_token)}
         )
         course_list_data = json.loads(course_list_response.data.decode())
@@ -224,7 +224,7 @@ class CheckAPI(unittest.TestCase):
         self.assertEqual(course_add_response_json['sections'][1]['name'], 'Hour 6')
 
         course_list_response = self.client.get(
-            '/api/course/list',
+            '/api/course/',
             headers={'Authorization': 'Bearer {}'.format(jwt_token)}
         )
         course_list_data = json.loads(course_list_response.data.decode())
@@ -314,7 +314,7 @@ class CheckAPI(unittest.TestCase):
         )
         self.assertEqual(delete_course_response.status_code, HTTPStatus.OK)
         course_list_response = self.client.get(
-            '/api/course/list',
+            '/api/course/',
             headers={'Authorization': 'Bearer {}'.format(jwt_token)}
         )
         course_list_data = json.loads(course_list_response.data.decode())
@@ -456,7 +456,6 @@ class CheckAPI(unittest.TestCase):
             ),
             content_type='application/json',
             headers={'Authorization': 'Bearer {}'.format(jwt_token)})
-        print(delete_student_exam_response.data.decode())
         exam1 = Exam.query.get(exam1.id)
         self.assertEqual(len(exam1.student_exams), 2)
         
