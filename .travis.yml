@@ -4,6 +4,6 @@ python:
 install:
   - bash setup.sh
 script: 
-  - build/build_vue.sh
+#- build/build_vue.sh
   - build/travis_config.sh
   - tests/run.sh
