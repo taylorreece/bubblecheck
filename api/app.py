@@ -1,27 +1,33 @@
+#!/usr/bin/env python3
 import os
-from flask import Flask, g, request, session, jsonify
-from flask_sqlalchemy import SQLAlchemy
+from database import db
+from flask import Flask, g, request, session, jsonify, render_template
 from flask_migrate import Migrate
 from flask_login import current_user
 from flask_login import LoginManager
+from http import HTTPStatus
 
 app = Flask(__name__)
 
-if os.path.isfile(os.path.join(os.path.dirname(__file__), '..', 'config', 'production.py')):
-    app.logger.info("Using production configuration")
-    app.config.from_object('config.production')
-else:
-    app.logger.info("Using testing configuration")
-    app.config.from_object('config.testing')
+# Set some application configuration from environment variables
+app.config['DEBUG'] = True if os.environ.get('FLASK_DEBUG', 'false') == 'true' else False
+app.config['ENV'] = 'development' if app.config['DEBUG'] else 'production'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI', 'sqlite:///app.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['DATABASE_CONNECT_OPTIONS'] = {}
+app.config['THREADS_PER_PAGE'] = 2
+app.config['CSRF_ENABLED'] = True
+app.config['CSRF_SESSION_KEY'] = os.environ.get('CSRF_SESSION_KEY', 'secret')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'secret')
 
-db = SQLAlchemy(app)
+db.init_app(app)
 migrate = Migrate(app, db)
 
-from bubblecheck.models import User
-from bubblecheck.models import Course
-from bubblecheck.models import Exam
-from bubblecheck.models import Section
-from bubblecheck.models import StudentExam
+from models import User
+from models import Course
+from models import Exam
+from models import Section
+from models import StudentExam
 
 # ===============================================================================
 # Configure out login manager
@@ -61,7 +67,10 @@ def internal_server_error(e):
 
 # ===============================================================================
 # Define our API endpoints:
-from bubblecheck.api import course_api
-from bubblecheck.api import user_api
+from routes import course_api
+from routes import user_api
 app.register_blueprint(course_api.course_api_routes, url_prefix='/api/course')
 app.register_blueprint(user_api.user_api_routes, url_prefix='/api/user')
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0')

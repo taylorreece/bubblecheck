@@ -3,7 +3,7 @@ from flask_login import current_user
 from sqlalchemy.orm import relationship
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
-from bubblecheck import db
+from database import db
 import datetime
 import enum
 import json

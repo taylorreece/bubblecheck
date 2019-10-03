@@ -5,8 +5,11 @@ CWD=$pwd
 DIR=$(dirname $0)
 cd $DIR/..
 source python-venv/bin/activate
-FLASK_APP=bubblecheck flask db upgrade
+cd $DIR/../api
+flask db upgrade
+cd -
 cd $DIR
+PYTHONPATH=$DIR/../api/
 ./test_api.py
 
 cd $CWD

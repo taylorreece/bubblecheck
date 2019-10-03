@@ -2,9 +2,11 @@
 set -x
 
 # Create and use python virtual environment
+cd api
 virtualenv -p python3 python-venv
 python-venv/bin/pip install -r requirements.txt
-FLASK_APP=bubblecheck python-venv/bin/flask db upgrade
+python-venv/bin/flask db upgrade
+cd ..
 
 # Create and use node virtual environment
 python-venv/bin/python -m nodeenv node-venv

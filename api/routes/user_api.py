@@ -16,8 +16,9 @@ from flask_login import login_user
 from flask_login import logout_user
 from flask_login import current_user
 from http import HTTPStatus
-from bubblecheck import db
-from bubblecheck.models import User
+
+from database import db
+from models import User
 
 user_api_routes = Blueprint('user_api_routes', __name__)
 

@@ -1,3 +1,4 @@
 #!/bin/bash
 ./run-node.sh &
-./run-flask.py
+cd api
+python-venv/bin/python ./app.py

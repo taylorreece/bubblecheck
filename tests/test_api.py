@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
 import json
+import os
 import random
 import string
 import sys
 import unittest
-sys.path.append('..')
-from bubblecheck.models import User, Course, Section, Exam, StudentExam
-from bubblecheck import app
-from bubblecheck import db
+sys.path.append(os.path.join('..','api'))
+from app import app
+from models import User, Course, Section, Exam, StudentExam
+from app import db
 from http import HTTPStatus
+
+app.app_context().push() # Get proper database context
 
 class Random(object):
     def letters(self,N=8):
-        return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(N))
+        return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(N))
     def email(self):
         return '{}@{}.com'.format(self.letters(8), self.letters(5))
     def user(self):

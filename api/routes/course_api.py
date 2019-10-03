@@ -9,14 +9,14 @@ from functools import wraps
 from http import HTTPStatus
 from werkzeug import MultiDict
 
-from bubblecheck.forms import CourseForm
-from bubblecheck.models import Course
-from bubblecheck.models import CoursePermissionEnum
-from bubblecheck.models import Exam
-from bubblecheck.models import Section
-from bubblecheck.models import StudentExam
-from bubblecheck.models import UserCoursePermission
-from bubblecheck import db
+from forms import CourseForm
+from models import Course
+from models import CoursePermissionEnum
+from models import Exam
+from models import Section
+from models import StudentExam
+from models import UserCoursePermission
+from database import db
 
 course_api_routes = Blueprint('course_api_routes', __name__)
 
