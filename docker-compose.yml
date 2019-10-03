@@ -1,0 +1,18 @@
+version: '2'
+
+services:
+  api:
+    restart: always
+    build: ./api
+    environment:
+      - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://bubblecheck_user:1234@postgres/bubblecheck_db
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+
+  postgres:
+    restart: always
+    build: ./postgresql
+    expose:
+      - "5432"

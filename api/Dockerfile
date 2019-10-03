@@ -2,7 +2,7 @@ FROM ubuntu:latest
 
 # Install some apt packages
 RUN apt-get update -y
-RUN apt-get install -y python3-pip python-dev build-essential
+RUN apt-get install -y python3-pip python-dev build-essential libpq-dev
 
 # Install some pip packages
 COPY ./requirements.txt /requirements.txt
@@ -16,8 +16,5 @@ ENV FLASK_DEBUG=true
 ENV LC_ALL=C.UTF-8
 ENV LC_ALL=C.UTF-8
 
-RUN flask db upgrade
-
-# Run 'er
 ENTRYPOINT ["python3"]
-CMD ["app.py"]
+CMD ["run.py"]
