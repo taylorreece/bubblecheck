@@ -9,8 +9,8 @@ python-venv/bin/flask db upgrade
 cd ..
 
 # Create and use node virtual environment
-python-venv/bin/python -m nodeenv node-venv
-source node-venv/bin/activate
+api/python-venv/bin/python -m nodeenv node-venv
+source api/node-venv/bin/activate
 npm install --global @vue/cli @vue/cli-init
 
 # Install packages from bubblecheck-vue/packages.json
