@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 import sys
-sys.path.append('..')
-
-from bubblecheck import db
-from bubblecheck.models import User, Course, Section, UserCoursePermission
+from app import app, db
+from models import User, Course, Section, UserCoursePermission
+app.app_context().push()
 
 user = User(email='a@a.com', teachername='Mr. Smith')
 user.set_password('a')

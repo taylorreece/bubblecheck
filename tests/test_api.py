@@ -6,9 +6,8 @@ import string
 import sys
 import unittest
 sys.path.append(os.path.join('..','api'))
-from app import app
+from app import app, db
 from models import User, Course, Section, Exam, StudentExam
-from app import db
 from http import HTTPStatus
 
 app.app_context().push() # Get proper database context
