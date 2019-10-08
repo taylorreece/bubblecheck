@@ -2,6 +2,7 @@ FROM ubuntu:latest
 
 # Install some apt packages
 RUN apt-get update -y
+RUN apt-get dist-upgrade -y
 RUN apt-get install -y python3-pip python-dev build-essential libpq-dev
 
 # Install some pip packages

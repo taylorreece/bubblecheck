@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# FIXME: These users are unusable.  Something something nonetype user permissions
+
 import sys
 from app import app, db
 from models import User, Course, Section, UserCoursePermission
@@ -20,10 +22,13 @@ course2.sections = [
     Section(name='Hour 6'),
     Section(name='Hour 7')
 ]
-user.courses = [course1, course2]
+user_course1_permission = UserCoursePermission(permission='own', user=user, course=course1)
+user_course2_permission = UserCoursePermission(permission='own', user=user, course=course2)
 friend_permission = UserCoursePermission(permission = 'edit', user = friend, course = course1)
 
 db.session.add(user)
 db.session.add(friend)
+db.session.add(user_course1_permission)
+db.session.add(user_course2_permission)
 db.session.add(friend_permission)
 db.session.commit()
