@@ -6,7 +6,12 @@ services:
     build: ./api
     environment:
       - FLASK_DEBUG=true
-      - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://bubblecheck_user:1234@postgres/bubblecheck_db
+      - DATABASE_DRIVER=postgresql+psycopg2
+      - DATABASE_USER=bubblecheck_user
+      - DATABASE_PASSWORD=1234
+      - DATABASE_NAME=bubblecheck_db
+      - DATABASE_ENDPOINT=postgres
+      - DATABASE_PORT=5432
     ports:
       - "5000:5000"
     volumes:
@@ -18,7 +23,12 @@ services:
   migrate_and_seed:
     build: ./api
     environment:
-      - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://bubblecheck_user:1234@postgres/bubblecheck_db
+      - DATABASE_DRIVER=postgresql+psycopg2
+      - DATABASE_USER=bubblecheck_user
+      - DATABASE_PASSWORD=1234
+      - DATABASE_NAME=bubblecheck_db
+      - DATABASE_ENDPOINT=postgres
+      - DATABASE_PORT=5432
     depends_on:
       - postgres
     entrypoint: sh

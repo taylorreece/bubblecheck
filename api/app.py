@@ -12,7 +12,17 @@ app = Flask(__name__)
 # Set some application configuration from environment variables
 app.config['DEBUG'] = True if os.environ.get('FLASK_DEBUG', 'false') == 'true' else False
 app.config['ENV'] = 'development' if app.config['DEBUG'] else 'production'
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI', 'sqlite:///app.db')
+if os.environ.get('DATABASE_DRIVER'):
+    app.config['SQLALCHEMY_DATABASE_URI'] = '{}://{}:{}@{}:{}/{}'.format(
+        os.environ.get('DATABASE_DRIVER'),
+        os.environ.get('DATABASE_USER'),
+        os.environ.get('DATABASE_PASSWORD'),
+        os.environ.get('DATABASE_ENDPOINT'),
+        os.environ.get('DATABASE_PORT'),
+        os.environ.get('DATABASE_NAME'),
+    )
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['DATABASE_CONNECT_OPTIONS'] = {}
 app.config['THREADS_PER_PAGE'] = 2

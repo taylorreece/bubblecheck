@@ -1,0 +1,9 @@
+Type: AWS::RDS::DBInstance
+Properties:
+  MasterUsername: ${self:custom.DATABASE.USER}
+  MasterUserPassword: ${self:custom.DATABASE.PASS}
+  AllocatedStorage: 20
+  DBName: ${self:custom.DATABASE.NAME}
+  DBInstanceClass: db.t2.micro
+  Engine: postgres
+  PubliclyAccessible: true
