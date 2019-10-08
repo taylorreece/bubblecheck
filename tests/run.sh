@@ -4,7 +4,7 @@ set -xe
 CWD=$pwd
 DIR=$(dirname $0)
 cd $DIR/../api
-source python-venv/bin/activate
+source ../python-venv/bin/activate
 flask db upgrade
 cd -
 cd $DIR

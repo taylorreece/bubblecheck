@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
   api:
@@ -9,6 +9,8 @@ services:
       - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://bubblecheck_user:1234@postgres/bubblecheck_db
     ports:
       - "5000:5000"
+    volumes:
+      - "$PWD_FULL_PATH/api:/app"
     depends_on:
       - postgres
       - migrate_and_seed
