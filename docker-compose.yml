@@ -5,6 +5,7 @@ services:
     restart: always
     build: ./api
     environment:
+      - FLASK_DEBUG=true
       - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://bubblecheck_user:1234@postgres/bubblecheck_db
     ports:
       - "5000:5000"
@@ -18,7 +19,7 @@ services:
       - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://bubblecheck_user:1234@postgres/bubblecheck_db
     depends_on:
       - postgres
-    entrypoint: bash
+    entrypoint: sh
     command: migrate_and_seed.sh
 
   postgres:

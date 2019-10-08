@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # for use in local dev only.
 
 set -e
