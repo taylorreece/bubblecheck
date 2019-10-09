@@ -68,6 +68,13 @@ def catch_all(path):
     return render_template("dist/index.html")
 
 # ===============================================================================
+@app.route('/api/upgrade_db')
+def upgrade_db():
+    from flask_migrate import upgrade
+    upgrade(directory='migrations')
+    return jsonify(success=True)
+
+# ===============================================================================
 # Handle 500 errors gracefully
 @app.errorhandler(500)
 def internal_server_error(e):
