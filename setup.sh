@@ -9,7 +9,12 @@ cd api
 cd ..
 
 # Environment file for docker-compose
-echo "PWD_FULL_PATH=$(readlink -f .)" > .env
+PWD_FULL_PATH=$(readlink .)
+if [[ "$PWD_FULL_PATH" = "" ]];
+then
+  PWD_FULL_PATH=$PWD
+fi
+echo "PWD_FULL_PATH=$PWD_FULL_PATH" > .env
 
 # Doing this for now... I'll have better auth env variable mechanisms later
 echo "COGNITO_URI=taylor-test.auth.us-east-1.amazoncognito.com" >> .env
