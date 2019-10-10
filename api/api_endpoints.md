@@ -1,20 +1,20 @@
 # API Endpoints
 * [User](#user)
-    * [/api/user/current_user](#apiusercurrent_user)
-    * [/api/user/flash_messages](#apiuserflash_messages)
-    * [/api/user/token/request](#apiusertokenrequest)
-    * [/api/user/token/check](#apiusertokencheck)
-    * [/api/user/token/renew](#apiusertokenrenew)
+    * [/api/users/current_user](#apiuserscurrent_user) [GET]
+    * [/api/users/flash_messages](#apiusersflash_messages) [GET]
+    * [/api/users/token](#apiuserstoken) [POST]
+    * [/api/users/token/check](#apiuserstokencheck) [GET]
+    * [/api/users/token/renew](#apiuserstokenrenew) [GET]
 * [Course](#course)
-    * [/api/course/list](#apicourselist)
-    * [/api/course/get/\<course_id\>](#apicoursegetcourse_id)
-    * [/api/course/add](#apicourseadd)
-    * [/api/course/update/\<course_id\>](#apicourseupdatecourse_id)
-    * [/api/course/\<course_id\>/section/add](#apicoursecourseidsectionadd)
-    * [/api/course/\<course_id\>/section/\<section_id\>/update](#apicoursecourseidsectionsectionidupdate)
+    * [/api/courses](#apicourselist) [GET]
+    * [/api/courses](#apicourseadd) [POST]
+    * [/api/courses/\<course_id\>](#apicoursegetcourse_id) [GET]
+    * [/api/course/\<course_id\>](#apicourseupdatecourse_id) [PUT]
+    * [/api/course/\<course_id\>/section](#apicoursecourseidsectionadd) [POST]
+    * [/api/course/\<course_id\>/section/\<section_id\>](#apicoursecourseidsectionsectionidupdate) [PUT]
 
 ## User
-### /api/user/current_user
+### /api/users/current_user
 
 **Method**: GET
 
@@ -23,7 +23,7 @@
 **Sample Output**:
 ```json
 {
-	"user": {
+  "user": {
     "email": "foo@bar.com", 
     "id": 123, 
     "public_uuid": "0dc9e8f5-3b1e-4a5e-97ad-1280512ef8e4", 
@@ -33,7 +33,7 @@
 }
 ```
 ----
-### /api/user/flash_messages
+### /api/users/flash_messages
 
 **Method**: GET
 
@@ -52,7 +52,7 @@
 }
 ```
 ----
-### /api/user/token/request
+### /api/users/token
 
 **Method**: POST
 

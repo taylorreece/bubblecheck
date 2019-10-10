@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import os
+from bcjwt import bcjwt_secret
+from cognito import cognito
 from database import db
 from flask import Flask, g, request, session, jsonify, render_template
 from flask_migrate import Migrate
@@ -29,8 +31,14 @@ app.config['THREADS_PER_PAGE'] = 2
 app.config['CSRF_ENABLED'] = True
 app.config['CSRF_SESSION_KEY'] = os.environ.get('CSRF_SESSION_KEY', 'secret')
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'secret')
+bcjwt_secret = app.config['SECRET_KEY']
+
+# Set a couple of cognito-specific settings
+app.config['COGNITO_URI'] = os.environ.get('COGNITO_URI')
+app.config['COGNITO_CLIENT_ID'] = os.environ.get('COGNITO_CLIENT_ID')
 
 db.init_app(app)
+cog = cognito.init_app(app)
 migrate = Migrate(app, db)
 
 from models import User
@@ -62,6 +70,7 @@ def load_user_session(user_id):
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def catch_all(path):
+    return "nope."
     if app.debug:
         import requests
         return requests.get('http://localhost:8080/{}'.format(path)).text

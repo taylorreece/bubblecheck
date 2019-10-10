@@ -1,0 +1,7 @@
+TODO: 
+    [X] Remove login logic from app
+    [X] Add api callback endpoint to turn code -> login
+     [X] Respond if they're a new user or not; new users see the user creation screen
+    [ ] Create a "golden" cognito setup with email/pass/google for dev testing
+    [ ] Add cognito setup to serverless
+    [ ] Create basic MY_DOMAIN.com/ page for now that shows current user

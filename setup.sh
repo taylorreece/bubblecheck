@@ -11,6 +11,11 @@ cd ..
 # Environment file for docker-compose
 echo "PWD_FULL_PATH=$(readlink -f .)" > .env
 
+# Doing this for now... I'll have better auth env variable mechanisms later
+echo "COGNITO_URI=taylor-test.auth.us-east-1.amazoncognito.com" >> .env
+echo "COGNITO_CLIENT_ID=7lrbokiaa665b8jtr8kcqeq0g0" >> .env
+
+
 # Create and use node virtual environment
 #api/python-venv/bin/python -m nodeenv node-venv
 #source node-venv/bin/activate

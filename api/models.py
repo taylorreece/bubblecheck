@@ -1,9 +1,11 @@
+from flask import g
 from flask_login import UserMixin
 from flask_login import current_user
 from sqlalchemy.orm import relationship
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 from database import db
+from bcjwt import bcjwt_secret
 import datetime
 import enum
 import json
@@ -26,8 +28,7 @@ class Base(db.Model):
 class User(UserMixin, Base):
     __tablename__ = 'users'
     email = db.Column(db.Text(), nullable=False, index=True, unique=True)
-    teachername = db.Column(db.Text(), nullable=False)
-    password = db.Column(db.Text(), nullable=False)
+    teachername = db.Column(db.Text())
     is_admin = db.Column(db.Boolean(), nullable=False, default=False)
     public_uuid = db.Column(db.Text(), nullable=False, index=True, default=generate_uuid, unique=True)
 
@@ -37,12 +38,6 @@ class User(UserMixin, Base):
         secondaryjoin="and_(UserCoursePermission.courses_id==Course.id, Course.active)",
         back_populates='users'
     )
-    
-    def set_password(self, password):
-        self.password = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password, password)
 
     def create_jwt(self):
         return jwt.encode(
@@ -50,7 +45,7 @@ class User(UserMixin, Base):
                 'email': self.email,
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=72)
             }, 
-            key=self.password,
+            key=bcjwt_secret,
             algorithm='HS256'
         ).decode()
 
@@ -58,7 +53,7 @@ class User(UserMixin, Base):
         try:
             decoded_token = jwt.decode(token, verify=False)
             u = User.query.filter(User.email==decoded_token['email']).one_or_none()
-            if u and jwt.decode(token, u.password, algorithms=['HS256']):
+            if u and jwt.decode(token, bcjwt_secret, algorithms=['HS256']):
                 return u
             else:
                 return None

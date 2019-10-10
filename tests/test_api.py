@@ -19,7 +19,6 @@ class Random(object):
         return '{}@{}.com'.format(self.letters(8), self.letters(5))
     def user(self):
         u = User(teachername=self.letters(), email=self.email())
-        u.set_password('foobar123!')
         return u
     def course(self):
         return Course(name=random.choice(['Geometry','Algebra','US History','Physics','Dance','Music','Art','World History','Band','French','Japanese','German']))
@@ -32,141 +31,12 @@ class CheckAPI(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(CheckAPI, self).__init__(*args, **kwargs)
         self.client = app.test_client()
-    
-    def test_user_creation(self):
-        # Create a user
-        user = rand.user()
-        response = self.client.post(
-            '/api/user/register',
-            data=json.dumps({
-                'email': user.email,
-                'teachername': user.teachername,
-                'password': 'foobar123!',
-                'repeatpassword': 'foobar123!'
-            }),
-            content_type='application/json'
-        )
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-
-        # Assert you are logged in
-        response = self.client.get('/api/user/current_user')
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.client.get('/api/user/logout')
-
-        # Try to create the same user again
-        response = self.client.post(
-            '/api/user/register',
-            data=json.dumps({
-                'email': user.email,
-                'teachername': user.teachername,
-                'password': 'foobar123!',
-                'repeatpassword': 'foobar123!'
-            }),
-            content_type='application/json'
-        )
-        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
-
-        # Assert that you get a failure if passwords don't match
-        response = self.client.post(
-            '/api/user/register',
-            data=json.dumps({
-                'email': rand.email(),
-                'teachername': 'Mrs. Smith',
-                'password': 'foobar123!',
-                'repeatpassword': 'doesnt match'
-            }),
-            content_type='application/json'
-        )
-        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
-
-
-    def test_user_login(self):
-        """ Create a user via direct model invocation, then verify login works"""
-        user = rand.user()
-        db.session.add(user)
-        db.session.commit()
-
-        ########################################################
-        # Verify bad credentials return a 401, UNAUTHORIZED
-        response = self.client.post(
-            '/api/user/login',
-            data=json.dumps({'email': user.email, 'password': 'wrong_password'}),
-            content_type='application/json')
-        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-
-        ########################################################
-        # The user shouldn't be able to access an endpoint protected by @login_required
-        response = self.client.get('/api/user/current_user')
-        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-
-        ########################################################
-        # Verify good credentials return a 200
-        login_response = self.client.post(
-            '/api/user/login',
-            data=json.dumps({'email': user.email, 'password': 'foobar123!'}),
-            content_type='application/json')
-        self.assertEqual(login_response.status_code, HTTPStatus.OK)
-
-        ########################################################
-        # The user should now be able to access /api/user/current_user, 
-        # protected by @login_required decorator
-        response = self.client.get('/api/user/current_user')
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-
-        ########################################################
-        # Test logout; we should now not be able to access the current_user endpoint once more
-        self.client.get('/api/user/logout')
-        response = self.client.get('/api/user/current_user')
-        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-    
-    def test_jwt_login(self):
-        """ Create a user, create a JWT token, verify it works, and that fake tokens don't """
-        user = rand.user()
-        db.session.add(user)
-        db.session.commit()
-
-        token_request_json = {
-            'email': user.email,
-            'password': 'foobar123!'
-        }
-
-        ########################################################
-        # Verify we can get a JWT token
-        token_request_response = self.client.post(
-            '/api/user/token/request',
-            data=json.dumps(token_request_json),
-            content_type='application/json')
-        self.assertEqual(token_request_response.status_code, HTTPStatus.OK)
-        token = json.loads(token_request_response.data.decode())['jwt_token']
-
-        ########################################################
-        # Verify we can use that token to check login
-        token_check_response = self.client.get(
-                '/api/user/current_user',
-                headers={'Authorization': 'Bearer {}'.format(token)})
-        self.assertEqual(token_check_response.status_code, HTTPStatus.OK)
-
-        ########################################################
-        # Verify we get a 302 if we try to use a bunk JWT
-        bad_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IkZha2VFbWFpbEBmb29iYXIuY29tIiwiZXhwIjozMjUyNTc0NzcxMX0.GUbxfg3OWSp4yei5GTzXRNF_KF5xacNSb4mcrcr6LoI'
-        bad_token_check_response = self.client.get(
-            '/api/user/current_user',
-            headers={'Authorization': 'Bearer {}'.format(bad_token)})
-        self.assertEqual(bad_token_check_response.status_code, HTTPStatus.UNAUTHORIZED)
-
-        ########################################################
-        # Verify we can renew a JWT token
-        token_renew_response = self.client.get(
-                '/api/user/token/renew',
-                headers={'Authorization': 'Bearer {}'.format(token)})
-        self.assertEqual(token_renew_response.status_code, HTTPStatus.OK)
 
     def test_course_endpoints(self):
         """ Create a course, add some sections, delete some things, and rename some things """
         ########################################################
         # Set up a user and a course
         user = rand.user()
-        user.set_password('foobar123!')
         course = Course(name='US History')
         section1 = Section(name='Hour 1')
         section2 = Section(name='Hour 2')
@@ -176,17 +46,8 @@ class CheckAPI(unittest.TestCase):
         db.session.commit()
 
         token_request_json = {
-            'email': user.email,
-            'password': 'foobar123!'
+            'email': user.email
         }
-
-        ########################################################
-        # Verify we can get a JWT token
-        token_request_response = self.client.post(
-            '/api/user/token/request',
-            data=json.dumps(token_request_json),
-            content_type='application/json')
-        jwt_token = json.loads(token_request_response.data.decode())['jwt_token']
 
         ########################################################
         # Verify that we have a single course for this user
@@ -325,7 +186,6 @@ class CheckAPI(unittest.TestCase):
 
     def test_exam_endpoints(self):
         user = rand.user()
-        user.set_password('foobar123!')
         course = Course(name='World Lit')
         section1 = Section(name='Hour 1')
         section2 = Section(name='Hour 2')
@@ -339,20 +199,6 @@ class CheckAPI(unittest.TestCase):
         db.session.commit()
         db.session.refresh(course)
         db.session.refresh(exam1)
-
-        token_request_json = {
-            'email': user.email,
-            'password': 'foobar123!'
-        }
-
-        ########################################################
-        # Verify we can get a JWT token
-        token_request_response = self.client.post(
-            '/api/user/token/request',
-            data=json.dumps(token_request_json),
-            content_type='application/json'
-        )
-        jwt_token = json.loads(token_request_response.data.decode())['jwt_token']
 
         ##############################################
         # Verify that we have two exams in this course
