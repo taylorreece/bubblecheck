@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: Spins up auth.bubblecheck.app for use by all bubblecheck apps (dev, qa, and production)
+
+Parameters:
+  DomainName:
+    Type: String
+    Default: auth.bubblecheck.app
+  UserPoolName:
+    Type: String
+    Default: bubblecheck-auth
+    
+Resources:
+  UserPool:
+    Type: "AWS::Cognito::UserPool"
+    Properties:
+      AutoVerifiedAttributes:
+        - "email"
+      DeviceConfiguration: 
+        ChallengeRequiredOnNewDevice: False
+        DeviceOnlyRememberedOnUserPrompt: False
+      EmailVerificationMessage: "Your Bubblecheck verification code is {####}"
+      EmailVerificationSubject: "Your Bubblecheck verification code"
+      MfaConfiguration: "OFF"
+      Policies: 
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireUppercase: True
+          RequireLowercase: True
+          RequireNumbers: True
+          RequireSymbols: False
+      UsernameAttributes: 
+        - "email"
+      UserPoolName:
+        Ref: UserPoolName
+
+  AuthTlsCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName:
+        Ref: DomainName
+      ValidationMethod: DNS
+
+  UserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      UserPoolId:
+        Ref: UserPool
+      Domain: 
+        Ref: DomainName
+      CustomDomainConfig:
+        CertificateArn:
+          Ref: AuthTlsCertificate
+
+  GoogleUserPoolIdentityProvider:
+    Type: AWS::Cognito::UserPoolIdentityProvider
+    Properties:
+      UserPoolId:
+        Ref: UserPool
+      ProviderName: Google
+      ProviderType: Google
+      AttributeMapping:
+        email: "email"
+        username: "sub"
+      ProviderDetails:
+        authorize_scopes: "openid email profile"
+        client_id: '{{resolve:ssm:GoogleClientId:1}}'
+        client_secret: '{{resolve:ssm:GoogleClientSecret:1}}' # Bump the '1' if you every change this value
+
+Outputs:
+  UserPoolId:
+    Description: Id of the User Pool
+    Value:
+      Ref: UserPool
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-UserPoolId"

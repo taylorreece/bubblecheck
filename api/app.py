@@ -38,7 +38,7 @@ app.config['COGNITO_URI'] = os.environ.get('COGNITO_URI')
 app.config['COGNITO_CLIENT_ID'] = os.environ.get('COGNITO_CLIENT_ID')
 
 db.init_app(app)
-cog = cognito.init_app(app)
+cognito.init_app(app)
 migrate = Migrate(app, db)
 
 from models import User
