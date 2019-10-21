@@ -1,0 +1,25 @@
+Type: AWS::Cognito::UserPoolClient
+Properties:
+  AllowedOAuthFlows:
+    - code
+    - implicit
+  AllowedOAuthFlowsUserPoolClient: True
+  AllowedOAuthScopes:
+    - email
+    - openid
+    - profile
+  CallbackURLs:
+    - 'https://${self:custom.APIURL.${self:provider.stage}}/api/user/oauth/cognito/callback'
+    - 'bubblecheck://cognito-callback'
+  ClientName: ${self:provider.stage}
+  ExplicitAuthFlows:
+    - ADMIN_NO_SRP_AUTH
+  GenerateSecret: False
+  ReadAttributes:
+    - email
+    - email_verified
+  SupportedIdentityProviders:
+    - COGNITO
+    - Google
+  UserPoolId:
+    Fn::ImportValue: cognito-auth-UserPoolId

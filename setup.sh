@@ -1,13 +1,6 @@
 #!/bin/bash
 set -x
 
-# Create and use python virtual environment
-virtualenv -p python3 python-venv
-cd api
-../python-venv/bin/pip install -r requirements.txt
-../python-venv/bin/flask db upgrade
-cd ..
-
 # Environment file for docker-compose
 PWD_FULL_PATH=$(readlink .)
 if [[ "$PWD_FULL_PATH" = "" ]];
@@ -17,8 +10,15 @@ fi
 echo "PWD_FULL_PATH=$PWD_FULL_PATH" > .env
 
 # Doing this for now... I'll have better auth env variable mechanisms later
-echo "COGNITO_URI=taylor-test.auth.us-east-1.amazoncognito.com" >> .env
-echo "COGNITO_CLIENT_ID=7lrbokiaa665b8jtr8kcqeq0g0" >> .env
+echo "COGNITO_URL=auth.bubblecheck.app" >> .env
+echo "COGNITO_CLIENT_ID=3e2h6ltcienr4l0nc1h4l6fl6o" >> .env
+
+# Create and use python virtual environment
+virtualenv -p python3 python-venv
+cd api
+../python-venv/bin/pip install -r requirements.txt
+../python-venv/bin/flask db upgrade
+cd ..
 
 
 # Create and use node virtual environment

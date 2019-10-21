@@ -1,6 +1,7 @@
 service: bubblecheck-api
 
 plugins:
+  - serverless-domain-manager
   - serverless-python-requirements
   - serverless-wsgi
 
@@ -20,6 +21,11 @@ provider:
       Fn::GetAtt: [PostgresqlRDSInstance, Endpoint.Address]
     DATABASE_PORT:
       Fn::GetAtt: [PostgresqlRDSInstance, Endpoint.Port]
+    COGNITO_URL: auth.bubblecheck.app
+    COGNITO_CLIENT_ID:
+      Ref: CognitoUserPoolClient
+    COGNITO_USER_POOL_ID:
+      Fn::ImportValue: cognito-auth-UserPoolId
       
 custom:
   wsgi:
@@ -29,10 +35,20 @@ custom:
     NAME: bubblecheck_db
     USER: bubblecheck_user
     PASS: bubblecheck_pass
+  APIURL:
+    dev: dev.bubblecheck.app
+    production: bubblecheck.app
+  customDomain:
+    domainName: ${self:provider.stage}.bubblecheck.app
+    basePath: api
+    certificateName: '*.bubblecheck.app'
+    stage: ${self:provider.stage}
+    createRoute53Record: true
 
 resources:
   Resources:
    PostgresqlRDSInstance: ${file(./serverless_resources/PostgresqlRDSInstance.yml)}
+   CognitoUserPoolClient: ${file(./serverless_resources/CognitoUserPoolClient.yml)}
 
 functions:
   app:

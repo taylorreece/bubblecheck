@@ -34,7 +34,7 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'secret')
 bcjwt_secret = app.config['SECRET_KEY']
 
 # Set a couple of cognito-specific settings
-app.config['COGNITO_URI'] = os.environ.get('COGNITO_URI')
+app.config['COGNITO_URL'] = os.environ.get('COGNITO_URL')
 app.config['COGNITO_CLIENT_ID'] = os.environ.get('COGNITO_CLIENT_ID')
 
 db.init_app(app)

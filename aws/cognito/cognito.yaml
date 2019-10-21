@@ -67,6 +67,33 @@ Resources:
         client_id: '{{resolve:ssm:GoogleClientId:1}}'
         client_secret: '{{resolve:ssm:GoogleClientSecret:1}}' # Bump the '1' if you every change this value
 
+  DevelopmentCognitoClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      AllowedOAuthFlows:
+        - code
+        - implicit
+      AllowedOAuthFlowsUserPoolClient: True
+      AllowedOAuthScopes:
+        - email
+        - openid
+        - profile
+      CallbackURLs:
+        - 'http://localhost:5000/api/user/oauth/cognito/callback'
+        - 'bubblecheck://cognito-callback'
+      ClientName: local_development
+      ExplicitAuthFlows:
+        - ADMIN_NO_SRP_AUTH
+      GenerateSecret: False
+      ReadAttributes:
+        - email
+        - email_verified
+      SupportedIdentityProviders:
+        - COGNITO
+        - Google
+      UserPoolId:
+        Ref: UserPool
+
 Outputs:
   UserPoolId:
     Description: Id of the User Pool

@@ -12,6 +12,7 @@ from flask import render_template
 from flask import request
 from flask import Response
 from flask import session
+from flask import url_for
 from flask_login import login_required
 from flask_login import login_user
 from flask_login import logout_user
@@ -29,10 +30,15 @@ user_api_routes = Blueprint('user_api_routes', __name__)
 def get_current_user():
     return jsonify(user=current_user.toJSON(), success=True)
 
-@user_api_routes.route('/oauth/cognito_callback', methods=['GET'])
+@user_api_routes.route('/oauth/cognito/callback', methods=['GET'])
 def login_via_cognito_callback():
     login_code = request.args.get('code')
-    email = cognito.get_email_from_code(code=login_code, host=request.headers.get('HOST'))
+    email = cognito.get_email_from_code(
+        code=login_code, 
+        callback_url=url_for(
+            'user_api_routes.login_via_cognito_callback',
+            _external=True
+    ))
     user = User.query.filter(User.email==email).one_or_none()
     if user:
         login_user(user)
@@ -44,6 +50,16 @@ def login_via_cognito_callback():
         db.session.refresh(_user)
         login_user(_user)
         return redirect('/api/user/current_user')
+
+@user_api_routes.route('/oauth/cognito/login', methods=['GET'])
+def oauth_login_redirect():
+    redirect_url=cognito.cognito_login_url(
+        callback_url=url_for(
+            'user_api_routes.login_via_cognito_callback',
+            _external=True
+    ))
+    print(redirect_url)
+    return redirect(redirect_url)
 
 # @user_api_routes.route('/login', methods=['POST'])
 # def user_login_view():

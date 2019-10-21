@@ -12,7 +12,7 @@ services:
       - DATABASE_NAME=bubblecheck_db
       - DATABASE_ENDPOINT=postgres
       - DATABASE_PORT=5432
-      - COGNITO_URI=$COGNITO_URI
+      - COGNITO_URL=$COGNITO_URL
       - COGNITO_CLIENT_ID=$COGNITO_CLIENT_ID
     ports:
       - "5000:5000"

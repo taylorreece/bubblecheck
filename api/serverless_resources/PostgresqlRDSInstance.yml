@@ -7,3 +7,6 @@ Properties:
   DBInstanceClass: db.t2.micro
   Engine: postgres
   PubliclyAccessible: true
+  Tags:
+    - Key: Name
+      Value: bubblecheck-${self:provider.stage}-db
