@@ -18,14 +18,21 @@ provider:
     DATABASE_PASSWORD: ${self:custom.DATABASE.PASS}
     DATABASE_NAME: ${self:custom.DATABASE.NAME}
     DATABASE_ENDPOINT: 
-      Fn::GetAtt: [PostgresqlRDSInstance, Endpoint.Address]
+      Fn::GetAtt: [PostgresqlRDSCluster, Endpoint.Address]
     DATABASE_PORT:
-      Fn::GetAtt: [PostgresqlRDSInstance, Endpoint.Port]
+      Fn::GetAtt: [PostgresqlRDSCluster, Endpoint.Port]
     COGNITO_URL: auth.bubblecheck.app
     COGNITO_CLIENT_ID:
       Ref: CognitoUserPoolClient
     COGNITO_USER_POOL_ID:
       Fn::ImportValue: cognito-auth-UserPoolId
+  vpc:
+    securityGroupIds:
+      - Ref: LambdaSecurityGroup
+    subnetIds:
+      - Ref: PrivateSubnet1
+      - Ref: PrivateSubnet2
+      - Ref: PrivateSubnet3
       
 custom:
   wsgi:
@@ -35,6 +42,17 @@ custom:
     NAME: bubblecheck_db
     USER: bubblecheck_user
     PASS: bubblecheck_pass
+  RDSConfig:
+    dev:
+      AutoPause: true
+      MinCapacity: 2
+      MaxCapacity: 4
+      SecondsUntilAutoPause: 600
+    production:
+      AutoPause: false
+      MinCapacity: 2
+      MaxCapacity: 32
+      SecondsUntilAutoPause: 0
   APIURL:
     dev: dev.bubblecheck.app
     production: bubblecheck.app
@@ -46,9 +64,10 @@ custom:
     createRoute53Record: true
 
 resources:
-  Resources:
-   PostgresqlRDSInstance: ${file(./serverless_resources/PostgresqlRDSInstance.yml)}
-   CognitoUserPoolClient: ${file(./serverless_resources/CognitoUserPoolClient.yml)}
+  - ${file(./serverless_resources/CognitoUserPoolClient.yml)}
+  - ${file(./serverless_resources/JumpHost.yml)}
+  - ${file(./serverless_resources/Network.yml)}
+  - ${file(./serverless_resources/PostgresqlRDSInstance.yml)}
 
 functions:
   app:
@@ -56,5 +75,3 @@ functions:
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
-
-# TODO: Define a VPC and subnets for the lambda (and RDS) to live in

@@ -58,7 +58,6 @@ def oauth_login_redirect():
             'user_api_routes.login_via_cognito_callback',
             _external=True
     ))
-    print(redirect_url)
     return redirect(redirect_url)
 
 # @user_api_routes.route('/login', methods=['POST'])

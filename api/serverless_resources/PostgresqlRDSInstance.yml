@@ -1,12 +1,45 @@
-Type: AWS::RDS::DBInstance
-Properties:
-  MasterUsername: ${self:custom.DATABASE.USER}
-  MasterUserPassword: ${self:custom.DATABASE.PASS}
-  AllocatedStorage: 20
-  DBName: ${self:custom.DATABASE.NAME}
-  DBInstanceClass: db.t2.micro
-  Engine: postgres
-  PubliclyAccessible: true
-  Tags:
-    - Key: Name
-      Value: bubblecheck-${self:provider.stage}-db
+Resources:
+  PostgresqlRdsSubnetGroup:
+    Type: "AWS::RDS::DBSubnetGroup"
+    Properties:
+      DBSubnetGroupDescription: Subnets for Serverless aurora
+      SubnetIds:
+        - Ref: PrivateSubnet1
+        - Ref: PrivateSubnet2
+        - Ref: PrivateSubnet3
+
+  PostgresqlRdsDbSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: Secuirty group for RDS Serverless
+      SecurityGroupIngress:
+        - CidrIp: 10.0.0.0/16
+          IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 127.0.0.1/32
+      VpcId:
+        Ref: Vpc
+
+  PostgresqlRDSCluster:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      Engine: aurora-postgresql
+      EngineMode: serverless
+      MasterUsername: ${self:custom.DATABASE.USER}
+      MasterUserPassword: ${self:custom.DATABASE.PASS}
+      DatabaseName: ${self:custom.DATABASE.NAME}
+      ScalingConfiguration:
+        AutoPause: ${self:custom.RDSConfig.${self:provider.stage}.AutoPause}
+        MinCapacity: ${self:custom.RDSConfig.${self:provider.stage}.MinCapacity}
+        MaxCapacity: ${self:custom.RDSConfig.${self:provider.stage}.MaxCapacity}
+        SecondsUntilAutoPause: ${self:custom.RDSConfig.${self:provider.stage}.SecondsUntilAutoPause}
+      DBSubnetGroupName:
+        Ref: PostgresqlRdsSubnetGroup
+      VpcSecurityGroupIds:
+        - Fn::GetAtt: [PostgresqlRdsDbSecurityGroup, GroupId]
+      Tags:
+        - Key: Name
+          Value: ${self:service}-${self:provider.stage}-db

@@ -20,9 +20,6 @@ class BubblecheckCognito:
             'redirect_uri' : callback_url
         }
         response = requests.request('POST', code_exchange_url, data=payload)
-        print(response.text)
-        print(payload)
-        print(code_exchange_url)
         # We do *not* verify this JWT, because we just got it from AWS can can therefore trust it.
         jwt_token = json.loads(response.text).get('id_token')
         decoded_jwt = jwt.decode(jwt_token, verify=False)
