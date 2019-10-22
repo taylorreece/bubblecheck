@@ -1,6 +1,7 @@
 service: bubblecheck-api
 
 plugins:
+  - serverless-apigateway-service-proxy
   - serverless-domain-manager
   - serverless-python-requirements
   - serverless-wsgi
@@ -58,20 +59,43 @@ custom:
     production: bubblecheck.app
   customDomain:
     domainName: ${self:provider.stage}.bubblecheck.app
-    basePath: api
+    basePath: ''
     certificateName: '*.bubblecheck.app'
     stage: ${self:provider.stage}
     createRoute53Record: true
+  apiGatewayServiceProxies:
+    - s3:
+        path: /
+        method: get
+        action: GetObject
+        bucket:
+          Ref: ReactS3Bucket
+        key: index.html
+        cors: true
+    - s3:
+        path: /{myKey}
+        method: get
+        action: GetObject
+        bucket:
+          Ref: ReactS3Bucket
+        key:
+          pathParam: myKey
+        cors: true
 
 resources:
   - ${file(./serverless_resources/CognitoUserPoolClient.yml)}
   - ${file(./serverless_resources/JumpHost.yml)}
   - ${file(./serverless_resources/Network.yml)}
   - ${file(./serverless_resources/PostgresqlRDSInstance.yml)}
-
+  - ${file(./serverless_resources/ReactS3Bucket.yml)}
+  - Outputs:
+      ReactS3BucketName:
+        Value:
+          Ref: ReactS3Bucket
+        
 functions:
   app:
     handler: wsgi_handler.handler
     events:
-      - http: ANY /
-      - http: 'ANY {proxy+}'
+      - http: ANY /api
+      - http: 'ANY /api/{proxy+}'

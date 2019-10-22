@@ -1,0 +1,4 @@
+Resources:
+  ReactS3Bucket:
+    Type: AWS::S3::Bucket
+    
