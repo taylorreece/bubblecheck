@@ -1,4 +1,4 @@
-image: alpine:latest
+image: node:latest
 
 stages:
   - deploy-dev
@@ -6,9 +6,10 @@ stages:
 
 .deploy: &deploys
   before_script:
-    - echo "Hello"
+    - cd api/
+    - npm install
   script:
-    - echo "In the script for ${SLS_ENVIRONMENT}"
+    - serverless deploy --stage ${SLS_ENVIRONMENT}
 
 deploy-dev:
   <<: *deploys
