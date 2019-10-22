@@ -1,0 +1,22 @@
+image: alpine:latest
+
+stages:
+  - deploy
+
+.deply: &deploys
+  before_script:
+    - echo "Hello"
+  script:
+    - echo "In the script for ${SLS_ENVIRONMENT}"
+
+deploy-dev:
+  <<: *deploys
+  stage: deploy
+  variables:
+    SLS_ENVIRONMENT: dev
+
+deploy-prod:
+  <<: *deploys
+  stage: deploy
+  variables:
+    SLS_ENVIRONMENT: dev
