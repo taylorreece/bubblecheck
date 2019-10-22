@@ -1,9 +1,10 @@
 image: alpine:latest
 
 stages:
-  - deploy
+  - deploy-dev
+  - deploy-production
 
-.deply: &deploys
+.deploy: &deploys
   before_script:
     - echo "Hello"
   script:
@@ -11,13 +12,13 @@ stages:
 
 deploy-dev:
   <<: *deploys
-  stage: deploy
+  stage: deploy-dev
   variables:
     SLS_ENVIRONMENT: dev
 
 deploy-prod:
   <<: *deploys
-  stage: deploy
+  stage: deploy-production
   variables:
     SLS_ENVIRONMENT: production
   when: manual
