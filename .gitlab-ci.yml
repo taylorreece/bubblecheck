@@ -9,7 +9,8 @@ stages:
     - cd api/
     - npm install
   script:
-    - serverless deploy --stage ${SLS_ENVIRONMENT}
+    - node_modules/serverless/bin/serverless config credentials --provider aws --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY} --profile bubblecheck
+    - node_modules/serverless/bin/serverless deploy --stage ${SLS_ENVIRONMENT}
 
 deploy-dev:
   <<: *deploys
