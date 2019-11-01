@@ -46,7 +46,7 @@ def course_permission_required(required_permissions):
         return decorated_function
     return decorator
 
-@course_routes.route('/', methods=['POST'])
+@course_routes.route('', methods=['POST'])
 @login_required
 def add_course():
     _course_id = str(uuid4())
@@ -161,3 +161,20 @@ def delete_course(courseid):
             },
         )
     return jsonify(deleted=course_items, success=True)
+
+@course_routes.route('/<courseid>/exams', methods=['POST'])
+@course_permission_required(['own', 'write'])
+def create_exam(courseid):
+    exam_name = request.json['exam_name']
+    exam_format = request.json['exam_format']
+    exam_uuid = str(uuid4())
+    response = dynamodb.table.put_item(
+        Item={
+                'key1': 'exam_{}'.format(exam_uuid),
+                'key2': 'course_{}'.format(courseid),
+                'exam_name': exam_name,
+                'exam_format': exam_format,
+                'answer_key': "-"        
+        }
+    )
+    return jsonify(success=True, examid=exam_uuid)
