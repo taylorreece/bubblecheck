@@ -8,4 +8,4 @@ RUN pip install -r /requirements.txt
 COPY . /app
 WORKDIR /app
 
-ENTRYPOINT ["python", "app.py"]
+ENTRYPOINT ["python", "run.py"]

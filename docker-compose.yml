@@ -6,40 +6,46 @@ services:
     build: ./api
     environment:
       - FLASK_DEBUG=true
-      - DATABASE_DRIVER=postgresql+psycopg2
-      - DATABASE_USER=bubblecheck_user
-      - DATABASE_PASSWORD=1234
-      - DATABASE_NAME=bubblecheck_db
-      - DATABASE_ENDPOINT=postgres
-      - DATABASE_PORT=5432
+      - DYNAMO_ENDPOINT=http://dynamodb:8000
+      - DYNAMO_TABLE=bubblecheck
       - COGNITO_URL=$COGNITO_URL
       - COGNITO_CLIENT_ID=$COGNITO_CLIENT_ID
+      - AWS_REGION=local
+      - AWS_ACCESS_KEY_ID=dummy-access-key
+      - AWS_SECRET_ACCESS_KEY=dummy-access-key-secret
     ports:
       - "5000:5000"
     volumes:
       - "$PWD_FULL_PATH/api:/app"
     depends_on:
-      - postgres
-      - migrate_and_seed
+      - dynamodb
+      - dynamodb-table-create
 
-  migrate_and_seed:
-    build: ./api
+  dynamodb-table-create:
+    build: ./docker/dynamodb-table-create
     environment:
-      - DATABASE_DRIVER=postgresql+psycopg2
-      - DATABASE_USER=bubblecheck_user
-      - DATABASE_PASSWORD=1234
-      - DATABASE_NAME=bubblecheck_db
-      - DATABASE_ENDPOINT=postgres
-      - DATABASE_PORT=5432
-    depends_on:
-      - postgres
-    entrypoint: sh
-    command: migrate_and_seed.sh
+      - DYNAMO_ENDPOINT=http://dynamodb:8000
+      - DYNAMO_TABLE=bubblecheck
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=foo
+      - AWS_SECRET_ACCESS_KEY=bar
 
-  postgres:
+  # For viewing dynamodb tables; accessible at localhost:8001
+  dynamodb-admin:
     restart: always
-    build: ./docker/postgresql
+    build: ./docker/dynamodb-admin
+    environment:
+      - DYNAMO_ENDPOINT=http://dynamodb:8000
     ports:
-      - "5432:5432"
+      - "8001:8001"
     expose:
-      - "5432"
+      - "8001"
+
+  dynamodb:
+    restart: always
+    image: amazon/dynamodb-local:latest
+    ports:
+      - "8000:8000"
+    expose:
+      - "8000"
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-inMemory"]

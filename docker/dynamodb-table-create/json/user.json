@@ -1,0 +1,7 @@
+{
+    "key1": {"S": "email_first.last@email.com"},
+    "key2": {"S": "user_0000"},
+    "is_admin": {"BOOL": false},
+    "teacher_name": {"S": "Mrs. Last"},
+    "active": {"BOOL": true}   
+}

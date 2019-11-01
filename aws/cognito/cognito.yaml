@@ -79,7 +79,7 @@ Resources:
         - openid
         - profile
       CallbackURLs:
-        - 'http://localhost:5000/api/user/oauth/cognito/callback'
+        - 'http://localhost:5000/api/users/oauth/cognito/callback'
         - 'bubblecheck://cognito-callback'
       ClientName: local_development
       ExplicitAuthFlows:

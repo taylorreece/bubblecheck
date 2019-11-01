@@ -1,0 +1,10 @@
+.dockerignore
+.serverless
+Dockerfile
+__pycache__
+api_endpoints.md
+app.db
+package*.json
+serverless.yml
+serverless_resources
+venv/

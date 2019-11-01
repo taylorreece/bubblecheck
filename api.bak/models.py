@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 from database import db
-from bcjwt import bcjwt_secret
+from shared.bcjwt import bcjwt_secret
 import datetime
 import enum
 import json

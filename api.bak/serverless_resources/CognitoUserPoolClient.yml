@@ -11,7 +11,7 @@ Resources:
         - openid
         - profile
       CallbackURLs:
-        - 'https://${self:custom.APIURL.${self:provider.stage}}/api/user/oauth/cognito/callback'
+        - 'https://${self:custom.APIURL.${self:provider.stage}}/api/users/oauth/cognito/callback'
         - 'bubblecheck://cognito-callback'
       ClientName: ${self:provider.stage}
       ExplicitAuthFlows:
