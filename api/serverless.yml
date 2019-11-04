@@ -1,5 +1,15 @@
 service: bubblecheck-api
 
+package:
+  exclude:
+    - node_modules/**
+    - venv/**
+    - package-lock
+    - serverless_resources/**
+    - .dockerignore
+    - Dockerfile
+    - ./*/__pycache__/**
+
 plugins:
   - serverless-apigateway-service-proxy
   - serverless-domain-manager
@@ -14,46 +24,32 @@ provider:
   profile: bubblecheck
   environment:
     FLASK_DEBUG: true
-    DATABASE_DRIVER: postgresql+psycopg2
-    DATABASE_USER: ${self:custom.DATABASE.USER}
-    DATABASE_PASSWORD: ${self:custom.DATABASE.PASS}
-    DATABASE_NAME: ${self:custom.DATABASE.NAME}
-    DATABASE_ENDPOINT: 
-      Fn::GetAtt: [PostgresqlRDSCluster, Endpoint.Address]
-    DATABASE_PORT:
-      Fn::GetAtt: [PostgresqlRDSCluster, Endpoint.Port]
     COGNITO_URL: auth.bubblecheck.app
     COGNITO_CLIENT_ID:
       Ref: CognitoUserPoolClient
     COGNITO_USER_POOL_ID:
       Fn::ImportValue: cognito-auth-UserPoolId
-  vpc:
-    securityGroupIds:
-      - Ref: LambdaSecurityGroup
-    subnetIds:
-      - Ref: PrivateSubnet1
-      - Ref: PrivateSubnet2
-      - Ref: PrivateSubnet3
-      
+    DYNAMO_TABLE:
+      Ref: DynamoDbTable
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      # Restrict our IAM role permissions to
+      # the specific table for the stage
+      Resource:
+        - "Fn::GetAtt": [ DynamoDbTable, Arn ]
+
 custom:
   wsgi:
     app: app.app
     packRequirements: false
-  DATABASE:
-    NAME: bubblecheck_db
-    USER: bubblecheck_user
-    PASS: bubblecheck_pass
-  RDSConfig:
-    dev:
-      AutoPause: true
-      MinCapacity: 2
-      MaxCapacity: 4
-      SecondsUntilAutoPause: 600
-    production:
-      AutoPause: false
-      MinCapacity: 2
-      MaxCapacity: 32
-      SecondsUntilAutoPause: 0
   APIURL:
     dev: dev.bubblecheck.app
     production: bubblecheck.app
@@ -84,10 +80,8 @@ custom:
 
 resources:
   - ${file(./serverless_resources/CognitoUserPoolClient.yml)}
-  - ${file(./serverless_resources/JumpHost.yml)}
-  - ${file(./serverless_resources/Network.yml)}
-  - ${file(./serverless_resources/PostgresqlRDSInstance.yml)}
   - ${file(./serverless_resources/ReactS3Bucket.yml)}
+  - ${file(./serverless_resources/DynamoDbTable.yml)}
   - Outputs:
       ReactS3BucketName:
         Value:

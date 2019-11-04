@@ -1,1 +1,0 @@
-bcjwt_secret = ''

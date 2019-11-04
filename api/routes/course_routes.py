@@ -46,6 +46,26 @@ def course_permission_required(required_permissions):
         return decorated_function
     return decorator
 
+# Decorator to require that course and exam match, since permissions are on the course
+def verify_course_exam_match():
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            result = dynamodb.table.get_item(
+                Key={
+                    'key1': 'exam_{}'.format(kwargs['examid']),
+                    'key2': 'course_{}'.format(kwargs['courseid'])
+                }
+            )
+            if 'Item' in result:
+                return f(*args, **kwargs)
+            else:
+                resp = jsonify(error='Insufficient priviliges, or the course or exam does not exist.', success=False)
+                resp.status_code = HTTPStatus.UNAUTHORIZED
+                return resp
+        return decorated_function
+    return decorator
+
 @course_routes.route('', methods=['POST'])
 @login_required
 def add_course():
@@ -79,7 +99,7 @@ def add_course():
     dynamodb.client.transact_write_items(TransactItems=items)
     return jsonify(success=True, courseid=_course_id)
 
-@course_routes.route('/my_courses', methods=['GET'])
+@course_routes.route('', methods=['GET'])
 @login_required
 def my_courses():
     result = dynamodb.table.query(
@@ -150,8 +170,6 @@ def update_course(courseid):
 def delete_course(courseid):
     course_items = dynamodb.table.query(IndexName='SecondaryGSI',
         KeyConditionExpression=Key('key2').eq('course_{}'.format(courseid))
-    )['Items'] + dynamodb.table.query(
-        KeyConditionExpression=Key('key1').eq('course_{}'.format(courseid))
     )['Items']
     for item in course_items:
         dynamodb.table.delete_item(
@@ -162,19 +180,125 @@ def delete_course(courseid):
         )
     return jsonify(deleted=course_items, success=True)
 
+
 @course_routes.route('/<courseid>/exams', methods=['POST'])
 @course_permission_required(['own', 'write'])
 def create_exam(courseid):
-    exam_name = request.json['exam_name']
-    exam_format = request.json['exam_format']
-    exam_uuid = str(uuid4())
+    exam_name = request.json['name']
+    exam_format = request.json['format']
     response = dynamodb.table.put_item(
         Item={
-                'key1': 'exam_{}'.format(exam_uuid),
+                'key1': 'exam_{}'.format(uuid4()),
                 'key2': 'course_{}'.format(courseid),
                 'exam_name': exam_name,
-                'exam_format': exam_format,
-                'answer_key': "-"        
+                'exam_format': exam_format
         }
     )
     return jsonify(success=True, examid=exam_uuid)
+
+@course_routes.route('/<courseid>/exams/<examid>', methods=['GET'])
+@course_permission_required(['own', 'write', 'read'])
+@verify_course_exam_match()
+def get_exam(courseid, examid):
+    exam_items = dynamodb.table.query(
+        KeyConditionExpression=Key('key1').eq('exam_{}'.format(examid))
+    )['Items']
+    exam = dict()
+    exam['student_exams'] = list()
+    for item in exam_items:
+        if item['key2'].startswith('course_'):
+            exam['id'] = examid
+            exam['answer_key'] = item['answer_key']
+            exam['exam_name'] = item['exam_name']
+            exam['exam_format'] = item['exam_format']
+            exam['course_id'] = courseid
+        elif item['key2'].startswith('studentexam_'):
+            exam['student_exams'].append({
+                'id': item['key2'].replace('studentexam_', ''),
+                'answers': item['answers'],
+                'section_id': item['section_id'].replace('section_', '')
+            })
+    return jsonify(exam=exam)
+
+@course_routes.route('/<courseid>/exams/<examid>', methods=['PUT'])
+@course_permission_required(['own', 'write'])
+@verify_course_exam_match()
+def update_exam(courseid, examid):
+    request_json = request.get_json()
+    update_expressions = list()
+    expression_attribute_values = dict()
+    if 'name' in request_json:
+        update_expressions.append('exam_name = :n')
+        expression_attribute_values[':n'] = request_json['name']
+    if 'answer_key' in request_json:
+        update_expressions.append('answer_key = :a')
+        expression_attribute_values[':a'] = request_json['answer_key']
+    if 'format' in request_json:
+        update_expressions.append('exam_format = :f')
+        expression_attribute_values[':f'] = request_json['format']
+    result = dynamodb.table.update_item(
+        Key={
+            'key1': 'exam_{}'.format(examid),
+            'key2': 'course_{}'.format(courseid)
+        },
+        UpdateExpression="set {}".format(','.join(update_expressions)),
+        ExpressionAttributeValues=expression_attribute_values,
+        ReturnValues="ALL_NEW"
+    )
+    return jsonify(result=result, success=True)
+
+@course_routes.route('/<courseid>/exams/<examid>', methods=['DELETE'])
+@course_permission_required(['own', 'write'])
+@verify_course_exam_match()
+def delete_exam(courseid, examid):
+    exam_items = dynamodb.table.query(
+        KeyConditionExpression=Key('key1').eq('exam_{}'.format(courseid))
+    )['Items']
+    for item in exam_items:
+        dynamodb.table.delete_item(
+            Key={
+                'key1': item['key1'],
+                'key2': item['key2']
+            },
+        )
+    return jsonify(deleted=exam_items, success=True)
+
+@course_routes.route('/<courseid>/exams/<examid>/studentexams', methods=['POST'])
+@course_permission_required(['own', 'write'])
+@verify_course_exam_match()
+def create_studentexam(courseid, examid):
+    # TODO: Allow uploading of student exams
+    # TODO: Verify section id exists and seems sane
+    response = dynamodb.table.put_item(
+        Item={
+                'key1': 'exam_{}'.format(examid),
+                'key2': 'studentexam_{}'.format(uuid4()),
+                'section_id': 'section_{}'.format(request.json['section_id']),
+                'answers': request.json['answers']
+        }
+    )
+    return jsonify(response=response)
+
+@course_routes.route('/<courseid>/exams/<examid>/studentexams/<studentexamid>', methods=['PUT'])
+@course_permission_required(['own', 'write'])
+@verify_course_exam_match()
+def update_studentexam(courseid, examid, studentexamid):
+    request_json = request.get_json()
+    update_expressions = list()
+    expression_attribute_values = dict()
+    if 'answers' in request_json:
+        update_expressions.append('answers = :a')
+        expression_attribute_values[':a'] = request_json['answers']
+    if 'section_id' in request_json:
+        update_expressions.append('section_id = :s')
+        expression_attribute_values[':s'] = request_json['section_id']
+    result = dynamodb.table.update_item(
+        Key={
+            'key1': 'exam_{}'.format(examid),
+            'key2': 'studentexam_{}'.format(studentexamid),
+        },
+        UpdateExpression="set {}".format(','.join(update_expressions)),
+        ExpressionAttributeValues=expression_attribute_values,
+        ReturnValues="ALL_NEW"
+    )
+    return jsonify(success=True, result=result)
