@@ -1,4 +1,4 @@
-image: node:latest
+image: python:3.6-alpine
 
 stages:
   - deploy-dev
@@ -6,9 +6,9 @@ stages:
 
 .deploy: &deploys
   before_script:
-    - cd api/
     - npm install -g serverless
-    - npm install --only=dev
+    - cd api/
+    - npm install
   script:
     - serverless config credentials --provider aws --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY} --profile bubblecheck
     - serverless deploy --stage ${SLS_ENVIRONMENT}
