@@ -1,0 +1,7 @@
+{
+    "key1":{"S":"exam_0000"},
+    "key2":{"S":"course_0000"},
+    "exam_name":{"S":"Algebra Quiz"},
+    "exam_format":{"S":"DDDDDEEDD"},
+    "answer_key":{"S":"ABCDDEDCB"}
+}

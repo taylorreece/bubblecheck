@@ -22,6 +22,8 @@ class BubblecheckCognito:
         response = requests.request('POST', code_exchange_url, data=payload)
         # We do *not* verify this JWT, because we just got it from AWS can can therefore trust it.
         jwt_token = json.loads(response.text).get('id_token')
+        if not jwt_token:
+            return None
         decoded_jwt = jwt.decode(jwt_token, verify=False)
         return decoded_jwt.get('email')
 

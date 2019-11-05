@@ -11,6 +11,8 @@ from models import User, Course, Section, Exam, StudentExam
 from http import HTTPStatus
 
 app.app_context().push() # Get proper database context
+jwt = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyaWQiOiI5OTk5OTk5OS05OTk5LTk5OTktOTk5OS05OTk5OTk5OTk5OTkiLCJlbWFpbCI6ImZpcnN0Lmxhc3RAZW1haWwuY29tIiwiZXhwIjo2MjA1MjAxNDk4MH0.gxLBkOUnk4AakB1kbpTvDNdAYpinGCC9HhVUqsVMxh0'
+# JWT for dummy user, expires a while away
 
 class Random(object):
     def letters(self,N=8):

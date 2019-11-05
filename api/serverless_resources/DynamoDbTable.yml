@@ -1,0 +1,36 @@
+Resources:
+  DynamoDbTable:
+    Type: "AWS::DynamoDB::Table"
+    Properties:
+      AttributeDefinitions:
+        -
+          AttributeName: "key1"
+          AttributeType: "S"
+        -
+          AttributeName: "key2"
+          AttributeType: "S"
+      KeySchema:
+        -
+          AttributeName: "key1"
+          KeyType: "HASH"
+        -
+          AttributeName: "key2"
+          KeyType: "RANGE"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+      GlobalSecondaryIndexes:
+        -
+          IndexName: "SecondaryGSI"
+          KeySchema:
+            -
+              AttributeName: "key2"
+              KeyType: "HASH"
+            -
+              AttributeName: "key1"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput: 
+            ReadCapacityUnits: "5"
+            WriteCapacityUnits: "5"

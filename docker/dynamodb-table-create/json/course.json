@@ -1,0 +1,6 @@
+{
+    "key1": {"S": "email_first.last@email.com"},
+    "key2": {"S": "course_0000"},
+    "course_name": {"S": "Geometry"},
+    "permission": {"S": "own"}
+}

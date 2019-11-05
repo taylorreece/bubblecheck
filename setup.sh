@@ -17,7 +17,6 @@ echo "COGNITO_CLIENT_ID=3e2h6ltcienr4l0nc1h4l6fl6o" >> .env
 virtualenv -p python3 python-venv
 cd api
 ../python-venv/bin/pip install -r requirements.txt
-../python-venv/bin/flask db upgrade
 cd ..
 
 
