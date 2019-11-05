@@ -53,6 +53,12 @@ def load_user_from_request(request):
 def load_user_session(email):
     return User(email)
 
+@login_manager.unauthorized_handler
+def unauthorized_login():
+    resp = jsonify(error="Unauthorized", success=False)
+    resp.status_code = HTTPStatus.UNAUTHORIZED
+    return resp
+
 # ===============================================================================
 # Handle 500 errors gracefully
 @app.errorhandler(500)
