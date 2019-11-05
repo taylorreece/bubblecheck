@@ -59,6 +59,8 @@ custom:
     certificateName: '*.bubblecheck.app'
     stage: ${self:provider.stage}
     createRoute53Record: true
+  pythonRequirements:
+    dockerizePip: true
   apiGatewayServiceProxies:
     - s3:
         path: /
