@@ -13,6 +13,7 @@ services:
       - AWS_REGION=local
       - AWS_ACCESS_KEY_ID=dummy-access-key
       - AWS_SECRET_ACCESS_KEY=dummy-access-key-secret
+      - LOCAL_REACT_HOST=web:3000
     ports:
       - "5000:5000"
     volumes:
@@ -49,3 +50,11 @@ services:
     expose:
       - "8000"
     command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-inMemory"]
+
+  web:
+    restart: always
+    build: ./web
+    ports:
+      - "3000:3000"
+    volumes:
+      - "$PWD_FULL_PATH/web/src:/app/src"

@@ -11,7 +11,7 @@ from shared.bcjwt import bcjwt_secret
 from shared.cognito import cognito
 from shared.dynamodb import dynamodb
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=None)
 
 # Set some application configuration from environment variables
 app.config['DEBUG'] = True if os.environ.get('FLASK_DEBUG', 'false') == 'true' else False
@@ -66,6 +66,20 @@ def internal_server_error(e):
     resp = jsonify(app="bubblecheck-flask", error="An unknown error occurred", success=False)
     resp.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
     return resp
+
+# ===============================================================================
+# Local dev work requires that we forward node stuff via flask
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    if app.debug:
+        import requests
+        if os.environ.get('LOCAL_REACT_HOST'):
+          endpoint = os.environ.get('LOCAL_REACT_HOST')
+        else:
+          endpoint = 'localhost:3000'
+        return requests.get('http://{}/{}'.format(endpoint,path)).text
+    return 'you shouldnt see this.'
 
 # ===============================================================================
 # Blueprint some endpoints
