@@ -54,6 +54,8 @@ services:
   web:
     restart: always
     build: ./web
+    environment:
+      - CHOKIDAR_USEPOLLING=true # Ensure the container sees local file changes
     ports:
       - "3000:3000"
     volumes:
