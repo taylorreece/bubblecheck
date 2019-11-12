@@ -1,44 +1,46 @@
 // This Context will hold information about the currently logged in user, and will be consumed by components throught the application
 
 import React from 'react'
+import ApiInterface from '../api/Api'
 
 const AuthContext = React.createContext({
     user: {
         isAuthenticated: false,
         teacher_name: '',
-        email: '',
+        email: 'noemail',
         usersid: '',
     },
-    updateUser: (user) => {}
 })
 
 class AuthProvider extends React.Component {
-    state = {
-        user: {
-            isAuthenticated: false,
-            teacher_name: 'a',
-            email: '',
-            usersid: 'b',
-        },
-        updateUser: this.updateUser,
-    }
-    updateUser = (user) => {
+    async getLoginInformation() {
+        let api = new ApiInterface()
+        let user = await api.getCurrentUser()
         this.setState({
             user: {
-                isAuthenticated: true,
+                isAuthenticated: user.isAuthenticated,
                 teacher_name: user.teacher_name,
                 email: user.email,
-                usersid: user.usersid,
+                usersid: user.id,
             }
         })
     }
-
+    componentDidMount() {
+        this.getLoginInformation()
+    }
+    state = {
+        user: {
+            isAuthenticated: false,
+            teacher_name: '',
+            email: '',
+            usersid: '',
+        },
+    }
     render() {
         return (
             <AuthContext.Provider 
                 value={{
                     user: this.state.user,
-                    updateUser: this.updateUser
                 }}
             >
                 {this.props.children}

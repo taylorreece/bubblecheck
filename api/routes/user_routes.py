@@ -34,18 +34,19 @@ def login_via_cognito_callback():
     user = User(email)
     if user.exists:
         login_user(user)
-        return redirect(url_for('user_routes.get_current_user'))
+        return redirect('/')
     else:
         _user = User(email)
         _user.email = email
         _user.id = str(uuid4())
         _user.save()
         login_user(_user)
-        return redirect(url_for('user_routes.get_current_user'))
+        return redirect('/')
 
 # Redirect to Cognito OAuth site
 @user_routes.route('/oauth/cognito/login', methods=['GET'])
 def oauth_login_redirect():
+    print(request, flush=True)
     redirect_url=cognito.cognito_login_url(
         callback_url=url_for(
             'user_routes.login_via_cognito_callback',
@@ -56,7 +57,7 @@ def oauth_login_redirect():
 @user_routes.route('/logout', methods=['GET'])
 def user_logout_view():
     logout_user()
-    return jsonify(success=True)
+    return redirect('/')
 
 # Allow an app to snag an auth token and exchange it for a local JWT
 @user_routes.route('/jwt/cognito/<login_code>')

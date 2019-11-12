@@ -112,5 +112,4 @@ ENV/
 python-venv/
 node-venv/
 node_modules/
-package-lock.json
 builds/

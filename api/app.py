@@ -68,20 +68,6 @@ def internal_server_error(e):
     return resp
 
 # ===============================================================================
-# Local dev work requires that we forward node stuff via flask
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def catch_all(path):
-    if app.debug:
-        import requests
-        if os.environ.get('LOCAL_REACT_HOST'):
-          endpoint = os.environ.get('LOCAL_REACT_HOST')
-        else:
-          endpoint = 'localhost:3000'
-        return requests.get('http://{}/{}'.format(endpoint,path)).text
-    return 'you shouldnt see this.'
-
-# ===============================================================================
 # Blueprint some endpoints
 from routes import user_routes
 from routes import course_routes

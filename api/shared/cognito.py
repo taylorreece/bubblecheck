@@ -33,6 +33,7 @@ class BubblecheckCognito:
             'redirect_uri': callback_url,
             'response_type': 'code'
         }
+        print(parameters, flush=True)
         return 'https://{}/login?{}'.format(
             self.cognito_url,
             urlencode(parameters)

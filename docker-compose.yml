@@ -60,3 +60,11 @@ services:
       - "3000:3000"
     volumes:
       - "$PWD_FULL_PATH/web/src:/app/src"
+
+  nginx:
+    restart: always
+    build: ./docker/nginx
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
