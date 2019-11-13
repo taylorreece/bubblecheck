@@ -9,21 +9,30 @@ stages:
     - apk update && apk upgrade
     - apk add nodejs npm
     - npm install -g serverless
-    - cd api/
-    - npm install
+    - cd web/
+    - npm i
+    - cd ../api/
+    - npm i
   script:
     - serverless config credentials --provider aws --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY} --profile bubblecheck
     - serverless deploy --stage ${SLS_ENVIRONMENT}
+    - export STACK_NAME=$(serverless info --stage ${SLS_ENVIRONMENT} | grep '^stack: [a-z-]*$' | sed 's/stack: //')
+    - export REACT_S3_BUCKET=$(aws cloudformation describe-stacks --stack-name ${STACK_NAME} --query "Stacks[0].Outputs[?OutputKey=='ReactS3BucketName'].OutputValue" --output text)
+    - cd ../web
+    - npm run-script build
+    - aws s3 sync build/ s3://${REACT_S3_BUCKET}/
 
 deploy-dev:
   <<: *deploys
   stage: deploy-dev
   variables:
     SLS_ENVIRONMENT: dev
+    AWS_DEFAULT_REGION: us-east-1
 
 deploy-prod:
   <<: *deploys
   stage: deploy-production
   variables:
     SLS_ENVIRONMENT: production
+    AWS_DEFAULT_REGION: us-east-1
   when: manual
