@@ -74,6 +74,14 @@ custom:
         usage: 0.5
   apiGatewayServiceProxies:
     - s3:
+        path: /static/{staticKey}
+        method: get
+        action: GetObject
+        bucket:
+          Ref: ReactS3Bucket
+        key: static/{staticKey}
+        cors: true
+    - s3:
         path: /
         method: get
         action: GetObject
@@ -82,13 +90,12 @@ custom:
         key: index.html
         cors: true
     - s3:
-        path: /{myKey}
+        path: /{otherPathKey}
         method: get
         action: GetObject
         bucket:
           Ref: ReactS3Bucket
-        key:
-          pathParam: myKey
+        key: index.html
         cors: true
 
 resources:

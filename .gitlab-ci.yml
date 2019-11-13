@@ -16,7 +16,7 @@ stages:
     - npm i
   script:
     - serverless config credentials --provider aws --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY} --profile bubblecheck
-    # - serverless deploy --stage ${SLS_ENVIRONMENT}
+    - serverless deploy --stage ${SLS_ENVIRONMENT}
     - cd ..
     - bash deploy_react.sh ${SLS_ENVIRONMENT}  
 
