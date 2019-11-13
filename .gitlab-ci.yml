@@ -9,6 +9,7 @@ stages:
     - apk update && apk upgrade
     - apk add bash nodejs npm
     - npm install -g serverless
+    - pip install awscli
     - cd web/
     - npm i
     - cd ../api/
