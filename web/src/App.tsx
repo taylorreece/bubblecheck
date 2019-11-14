@@ -11,7 +11,7 @@ const App: React.FC = () => {
           {authctx => <div>
             User Id: { authctx.user.usersid } <br />
             Email: { authctx.user.email } <br />
-            Teacher Nmae: {authctx.user.teacher_name } <br />
+            Teacher Name: {authctx.user.teacher_name } <br />
           </div>}
         </AuthConsumer>
       </AuthProvider>

@@ -1,0 +1,58 @@
+- s3:
+    path: /favicon.ico
+    method: get
+    action: GetObject
+    bucket:
+      Ref: ReactS3Bucket
+    key: favicon.ico
+    cors: true
+- s3:
+    path: /manifest.json
+    method: get
+    action: GetObject
+    bucket:
+      Ref: ReactS3Bucket
+    key: manifest.json
+    cors: true
+- s3:
+    path: /robots.txt
+    method: get
+    action: GetObject
+    bucket:
+      Ref: ReactS3Bucket
+    key: robots.txt
+    cors: true
+- s3:
+    path: /service-worker.js
+    method: get
+    action: GetObject
+    bucket:
+      Ref: ReactS3Bucket
+    key: service-worker.js
+    cors: true
+- s3:
+    path: /{indexredirect+}
+    method: get
+    action: GetObject
+    bucket:
+      Ref: ReactS3Bucket
+    key: index.html
+    cors: true
+- s3:
+    path: /
+    method: get
+    action: GetObject
+    bucket:
+      Ref: ReactS3Bucket
+    key: index.html
+    cors: true
+- s3:
+    path: /static/{object+}
+    method: get
+    action: GetObject
+    bucket:
+      Ref: ReactS3Bucket
+    pathOverride: static/{object}
+    cors: true
+    requestParameters:
+      'integration.request.path.object': 'method.request.path.object'

@@ -23,6 +23,7 @@ provider:
   stage: dev
   region: us-east-1
   profile: bubblecheck
+  variableSyntax: "\\${{([ ~:a-zA-Z0-9._\\'\",\\-\\/\\(\\)]+?)}}"
   environment:
     FLASK_DEBUG: true
     COGNITO_URL: auth.bubblecheck.app
@@ -46,6 +47,8 @@ provider:
       # the specific table for the stage
       Resource:
         - "Fn::GetAtt": [ DynamoDbTable, Arn ]
+  logs:
+    restApi: true
 
 custom:
   wsgi:
@@ -55,10 +58,10 @@ custom:
     dev: dev.bubblecheck.app
     production: bubblecheck.app
   customDomain:
-    domainName: ${self:provider.stage}.bubblecheck.app
+    domainName: ${{self:provider.stage}}.bubblecheck.app
     basePath: ''
     certificateName: '*.bubblecheck.app'
-    stage: ${self:provider.stage}
+    stage: ${{self:provider.stage}}
     createRoute53Record: true
   capacities:
     - table: DynamoDbTable
@@ -73,35 +76,12 @@ custom:
         maximum: 10
         usage: 0.5
   apiGatewayServiceProxies:
-    - s3:
-        path: /static/{staticKey}
-        method: get
-        action: GetObject
-        bucket:
-          Ref: ReactS3Bucket
-        key: static/{staticKey}
-        cors: true
-    - s3:
-        path: /
-        method: get
-        action: GetObject
-        bucket:
-          Ref: ReactS3Bucket
-        key: index.html
-        cors: true
-    - s3:
-        path: /{otherPathKey}
-        method: get
-        action: GetObject
-        bucket:
-          Ref: ReactS3Bucket
-        key: index.html
-        cors: true
+    ${{file(./serverless_resources/ReactProxies.yml)}}
 
 resources:
-  - ${file(./serverless_resources/CognitoUserPoolClient.yml)}
-  - ${file(./serverless_resources/ReactS3Bucket.yml)}
-  - ${file(./serverless_resources/DynamoDbTable.yml)}
+  - ${{file(./serverless_resources/CognitoUserPoolClient.yml)}}
+  - ${{file(./serverless_resources/ReactS3Bucket.yml)}}
+  - ${{file(./serverless_resources/DynamoDbTable.yml)}}
   - Outputs:
       ReactS3BucketName:
         Value:
