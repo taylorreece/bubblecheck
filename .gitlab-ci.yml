@@ -13,7 +13,7 @@ stages:
     - cd web/ && npm i && cd ..
     - cd api/ && npm i && cd ..
   script:
-    - cd web/ && npm run-script build && cd ..
+    - cd web/ && npm run-script build && cd ../api
     - serverless config credentials --provider aws --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY} --profile bubblecheck
     - serverless deploy --stage ${SLS_ENVIRONMENT}
 
