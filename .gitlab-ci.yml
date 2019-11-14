@@ -7,7 +7,7 @@ stages:
 .deploy: &deploys
   before_script:
     - apk update && apk upgrade
-    - apk add bash nodejs npm
+    - apk add bash git nodejs npm openssh
     - npm install -g serverless
     - pip install awscli
     - cd web/
