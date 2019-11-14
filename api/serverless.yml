@@ -15,6 +15,7 @@ plugins:
   - serverless-domain-manager
   - serverless-dynamodb-autoscaling
   - serverless-python-requirements
+  - serverless-s3-deploy
   - serverless-wsgi
 
 provider:
@@ -77,6 +78,15 @@ custom:
         usage: 0.5
   apiGatewayServiceProxies:
     ${{file(./serverless_resources/ReactProxies.yml)}}
+  assets: # Deploy our react app from ../web/build to our S3 bucket
+    targets:
+      - bucket:
+          Ref: ReactS3Bucket
+        files:
+          - source: '../web/build/'
+            globs:
+              - '**/*'
+    auto: true
 
 resources:
   - ${{file(./serverless_resources/CognitoUserPoolClient.yml)}}

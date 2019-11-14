@@ -10,15 +10,12 @@ stages:
     - apk add bash git nodejs npm openssh
     - npm install -g serverless
     - pip install awscli
-    - cd web/
-    - npm i
-    - cd ../api/
-    - npm i
+    - cd web/ && npm i && cd ..
+    - cd api/ && npm i && cd ..
   script:
+    - cd web/ && npm run-script build && cd ..
     - serverless config credentials --provider aws --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY} --profile bubblecheck
     - serverless deploy --stage ${SLS_ENVIRONMENT}
-    - cd ..
-    - bash deploy_react.sh ${SLS_ENVIRONMENT}  
 
 deploy-dev:
   <<: *deploys

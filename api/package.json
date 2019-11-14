@@ -10,6 +10,7 @@
     "serverless-domain-manager": "^3.3.0",
     "serverless-dynamodb-autoscaling": "^0.6.2",
     "serverless-python-requirements": "^5.0.1",
+    "serverless-s3-deploy": "^0.9.0",
     "serverless-wsgi": "^1.7.3"
   }
 }
