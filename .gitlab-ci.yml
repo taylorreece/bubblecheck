@@ -1,10 +1,12 @@
 image: python:3.6-alpine
 
 stages:
-  - web-tests
-  - deploy
+  - tests
+  - deploy-dev
+  - deploy-production
 
 web-tests:
+  stage: tests
   before_script:
     - apk update && apk upgrade
     - apk add git nodejs npm openssh
