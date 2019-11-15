@@ -1,9 +1,8 @@
 image: python:3.6-alpine
 
 stages:
-  - test-dev
-  - deploy-dev
-  - deploy-production
+  - web-tests
+  - deploy
 
 web-tests:
   before_script:
