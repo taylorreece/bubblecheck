@@ -10,9 +10,9 @@ web-tests:
   before_script:
     - apk update && apk upgrade
     - apk add git nodejs npm openssh
-    - cd api/ && npm i && cd ..
+    - cd web/ && npm i && cd ..
   script:
-    - cd api/
+    - cd web/
     - npm run lint
 
 .deploy: &deploys
