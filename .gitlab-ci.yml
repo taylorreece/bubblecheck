@@ -1,8 +1,18 @@
 image: python:3.6-alpine
 
 stages:
+  - test-dev
   - deploy-dev
   - deploy-production
+
+web-tests:
+  before_script:
+    - apk update && apk upgrade
+    - apk add git nodejs npm openssh
+    - cd api/ && npm i && cd ..
+  script:
+    - cd api/
+    - npm run lint
 
 .deploy: &deploys
   before_script:
@@ -23,6 +33,7 @@ deploy-dev:
   variables:
     SLS_ENVIRONMENT: dev
     AWS_DEFAULT_REGION: us-east-1
+  needs: ['web-tests']
 
 deploy-prod:
   <<: *deploys
@@ -31,3 +42,5 @@ deploy-prod:
     SLS_ENVIRONMENT: production
     AWS_DEFAULT_REGION: us-east-1
   when: manual
+  needs: ['web-tests']
+

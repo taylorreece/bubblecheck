@@ -1,54 +1,53 @@
-// This Context will hold information about the currently logged in user, and will be consumed by components throught the application
+// This Context will hold information about the currently logged in user,
+// and will be consumed by components throught the application
 
-import React from 'react'
-import ApiInterface from '../api/Api'
+import React from "react";
+import ApiInterface from "../api/Api";
 
 const AuthContext = React.createContext({
     user: {
+        email: "noemail",
         isAuthenticated: false,
-        teacher_name: '',
-        email: 'noemail',
-        usersid: '',
+        teacher_name: "",
+        usersid: "",
     },
-})
+});
 
 class AuthProvider extends React.Component {
-    async getLoginInformation() {
-        let api = new ApiInterface()
-        let user = await api.getCurrentUser()
+    public state = {
+        user: {
+            email: "",
+            isAuthenticated: false,
+            teacher_name: "",
+            usersid: "",
+        },
+    };
+    public async getLoginInformation() {
+        const api = new ApiInterface();
+        const user = await api.getCurrentUser();
         this.setState({
             user: {
+                email: user.email,
                 isAuthenticated: user.isAuthenticated,
                 teacher_name: user.teacher_name,
-                email: user.email,
                 usersid: user.id,
-            }
-        })
+            },
+        });
     }
-    componentDidMount() {
-        this.getLoginInformation()
+    public componentDidMount() {
+        this.getLoginInformation();
     }
-    state = {
-        user: {
-            isAuthenticated: false,
-            teacher_name: '',
-            email: '',
-            usersid: '',
-        },
-    }
-    render() {
+    public render() {
         return (
-            <AuthContext.Provider 
-                value={{
-                    user: this.state.user,
-                }}
+            <AuthContext.Provider
+                value={{user: this.state.user}}
             >
                 {this.props.children}
             </AuthContext.Provider>
-        )
+        );
     }
 }
 
-const AuthConsumer = AuthContext.Consumer
+const AuthConsumer = AuthContext.Consumer;
 
-export { AuthProvider, AuthConsumer }
+export { AuthProvider, AuthConsumer };

@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
+    "plugins": [{"name": "typescript-tslint-plugin"}],
     "lib": [
       "dom",
       "dom.iterable",

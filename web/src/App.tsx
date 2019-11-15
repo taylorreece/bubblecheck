@@ -1,5 +1,15 @@
-import React from 'react';
-import {AuthProvider, AuthConsumer} from './contexts/AuthContext'
+import React from "react";
+import {AuthConsumer, AuthProvider} from "./contexts/AuthContext";
+
+function PrintUserInfo(props: any) {
+  return (
+    <div>
+      User Id: {props.user.usersid} <br />
+      Email: {props.user.email} <br />
+      Teacher Name: {props.user.teacher_name} <br />
+    </div>
+  );
+}
 
 const App: React.FC = () => {
   return (
@@ -8,15 +18,12 @@ const App: React.FC = () => {
       <a href="/api/users/logout">Logout</a>
       <AuthProvider>
         <AuthConsumer>
-          {authctx => <div>
-            User Id: { authctx.user.usersid } <br />
-            Email: { authctx.user.email } <br />
-            Teacher Name: {authctx.user.teacher_name } <br />
-          </div>}
+          {(authctx) => <PrintUserInfo user={authctx.user} />}
+
         </AuthConsumer>
       </AuthProvider>
     </div>
   );
-}
+};
 
 export default App;
