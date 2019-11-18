@@ -1,4 +1,4 @@
-image: python:3.6-alpine
+image: "docker.io/taylorreece/bc-build-server:latest"
 
 stages:
   - tests
@@ -8,23 +8,24 @@ stages:
 web-tests:
   stage: tests
   before_script:
-    - apk update && apk upgrade
-    - apk add git nodejs npm openssh
-    - cd web/ && npm i && cd ..
+    - cd web/
+    - npm i
+    - cd ..
   script:
     - cd web/
     - npm run lint
 
 .deploy: &deploys
   before_script:
-    - apk update && apk upgrade
-    - apk add bash git nodejs npm openssh
-    - npm install -g serverless
-    - pip install awscli
-    - cd web/ && npm i && cd ..
-    - cd api/ && npm i && cd ..
+    - cd web/
+    - npm i
+    - cd ../api/
+    - npm i
+    - cd ..
   script:
-    - cd web/ && npm run-script build && cd ../api
+    - cd web/
+    - npm run-script build
+    - cd ../api
     - serverless config credentials --provider aws --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY} --profile bubblecheck
     - serverless deploy --stage ${SLS_ENVIRONMENT}
 
