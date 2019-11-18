@@ -60,6 +60,7 @@ services:
       - "3000:3000"
     volumes:
       - "$PWD_FULL_PATH/web/src:/app/src"
+      - "$PWD_FULL_PATH/web/public:/app/public"
 
   nginx:
     restart: always

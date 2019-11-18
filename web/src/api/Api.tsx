@@ -19,7 +19,6 @@ class ApiInterface {
                 teacher_name: "",
             };
         }
-
     }
 }
 
