@@ -1,3 +1,4 @@
+import {Button} from "@material-ui/core";
 import React from "react";
 import {AuthConsumer, AuthProvider} from "./contexts/AuthContext";
 
@@ -14,8 +15,8 @@ function PrintUserInfo(props: any) {
 const App: React.FC = () => {
   return (
     <div>
-      <a href="/api/users/oauth/cognito/login">Login</a>
-      <a href="/api/users/logout">Logout</a>
+      <Button variant="contained" color="primary" href="/api/users/oauth/cognito/login">Login</Button>
+      <Button variant="contained" color="secondary" href="/api/users/logout">Logout</Button>
       <AuthProvider>
         <AuthConsumer>
           {(authctx) => <PrintUserInfo user={authctx.user} />}
