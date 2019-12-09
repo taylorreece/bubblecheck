@@ -78,8 +78,8 @@ const BCNavBar: React.FC = () => {
             <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
                 <MenuIcon />
             </IconButton>
-            <Typography variant="h6" className={classes.title}>
-                bubblecheck.app
+            <Typography variant="h5" className={classes.title}>
+                Bubblecheck
             </Typography>
             <AuthConsumer>
                 {(authctx) => <LoginLogoutButton user={authctx.user} />}

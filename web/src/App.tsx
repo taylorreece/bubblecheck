@@ -9,11 +9,9 @@ class App extends React.Component {
     return (
       <React.Fragment>
         <AuthProvider>
-          <div>
-            <CssBaseline />
-            <BCNavBar />
-            <BCDrawer />
-          </div>
+          <CssBaseline />
+          <BCNavBar />
+          <BCDrawer />
         </AuthProvider>
       </React.Fragment>
     );

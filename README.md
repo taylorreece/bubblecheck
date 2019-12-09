@@ -1,15 +1,17 @@
 # bubblecheck
-[![Build Status](https://travis-ci.org/taylorreece/bubblecheck.svg?branch=master)](https://travis-ci.org/taylorreece/bubblecheck)
+[![CICD Pipeline](https://gitlab.com/taylorreece/bubblecheck/badges/master/pipeline.svg)](https://gitlab.com/taylorreece/bubblecheck/pipelines)
+[![Code Coverage](https://gitlab.com/taylorreece/bubblecheck/badges/master/coverage.svg?job=coverage)](https://gitlab.com/taylorreece/bubblecheck)
 
 This repo contains all the code we'll need for the BubbleCheck rewrite.
 
-* bubblecheck/ contains web front-end stuff and API stuff
-* bubblecheck-vue/ contains vue code that gets placed into bubblecheck/templates and bubblecheck/static at build time
-* aws/ contains lambda functions, cloudformation information, etc.
+* api/ contains a flask-based API that web and mobile clients connect to
+* api/ also contains serverless.js code required to deploy a dev or production environment to AWS, complete with API gateway, S3 bucket for static React files, and a deployment of the flask app into Lambda
+* docker/ contains several docker images for local development
+* web/ contains a ReactJS front-end for bubblecheck
 
-To run the vue frontend live, 
- $ cd bubblecheck-vue
- $ npm run dev
+To run a local instance of bubblecheck, with local directories mapped to your local docker images (for instantenous recompiling and fast dev'ing):
 
-To build it,
- $ npm run build
+  * Run `$ ./setup.sh` to set up some docker environment variables
+  * Run `docker-compose up`
+
+A continuous integration / deployment stack is available at https://dev.bubblecheck.app

@@ -113,3 +113,6 @@ python-venv/
 node-venv/
 node_modules/
 builds/
+
+# Local dev stuff
+opencv-test/
