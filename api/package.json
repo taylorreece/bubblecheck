@@ -3,6 +3,7 @@
   "description": "",
   "version": "0.1.0",
   "dependencies": {
+    "common-tags": "^1.8.0",
     "serverless": "^1.59.3"
   },
   "devDependencies": {
