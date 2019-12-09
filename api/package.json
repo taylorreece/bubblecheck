@@ -3,10 +3,10 @@
   "description": "",
   "version": "0.1.0",
   "dependencies": {
-    "serverless": "^1.57.0"
+    "serverless": "^1.59.3"
   },
   "devDependencies": {
-    "serverless-apigateway-service-proxy": "^1.5.0",
+    "serverless-apigateway-service-proxy": "^1.6.0",
     "serverless-domain-manager": "^3.3.0",
     "serverless-dynamodb-autoscaling": "^0.6.2",
     "serverless-python-requirements": "^5.0.1",
